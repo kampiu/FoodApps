@@ -171,7 +171,7 @@
     
     .seller-cart-content {
         width: 100%;
-        height: 100vw;
+        height:380px;
         position: absolute;
         left: 0;
         bottom: 0;
@@ -183,7 +183,7 @@
         width: 100%;
         height: 44px;
         line-height: 43px;
-        font-size: .28rem;
+        font-size: 14px;
         font-weight: 700;
         padding: 0 12px;
         border-bottom: 1px solid #EEEFF0;
@@ -208,7 +208,7 @@
     }
     
     .seller-cart-item-by-name {
-        font-size: .26rem;
+        font-size:12px;
         color: #333;
         font-weight: 600;
         max-width: 60vw;
@@ -219,7 +219,7 @@
         margin-right: auto;
         margin-left: 6px;
         color: #C6C6C6;
-        font-size: .22rem;
+        font-size: 12px;
         display:flex;
     }
     
@@ -244,7 +244,7 @@
     
     @keyframes putInfo {
         from {
-            bottom: -60vw;
+            bottom: -60vh;
         }
         to {
             bottom: 0px;

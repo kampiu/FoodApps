@@ -7,8 +7,9 @@ import Http from '@/common/http'
 import PullTo from 'vue-pull-to'
 import 'swiper/dist/css/swiper.min.css'
 import '@/common/common.css'
-
-
+import 'vue-croppa/dist/vue-croppa.css'
+import Croppa from 'vue-croppa'
+//import registerServiceWorker from '@/common/registerServiceWorker'
 
 (function(d, w) {
 	let dw = d.documentElement.clientWidth;
@@ -24,7 +25,7 @@ Vue.config.productionTip = false
 Vue.prototype.$ajax = Http
 Vue.use(Router)
 Vue.use(VueResource)
-
+Vue.use(Croppa)
 
 const app = new Vue({
 	el: "#app",
@@ -34,19 +35,33 @@ const app = new Vue({
 	components: {
 		App
 	},
-	created(){
+	created() {
 		this.initApp()
 	},
-	methods:{
-		initApp(){
+	methods: {
+		initApp() {
 			this.$store.commit("cart/initOrder")
 			this.$store.commit("order/initOrder")
+			this.$store.dispatch("user/initToken")
 		}
 	},
 	watch: {
-		$route(to){
-			store.commit("common/initRouter",to.name)
+		$route(to) {
+			store.commit("common/initRouter", to.name)
 		}
 	}
 })
 
+window.addEventListener("storage", (e) => {
+	if(!e.storageArea.eleme_billson_token && store.getters.token == "") {
+		app.$router.push({
+			path: "/login"
+		})
+	}
+})
+
+//window.postMessage = () => {
+//
+//}
+
+//registerServiceWorker()

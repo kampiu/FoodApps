@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import shopcartStore from '@/store/shopcartStore'
 import commonStore from '@/store/commonStore'
 import orderStore from '@/store/orderStore'
-import shopcartStore from '@/store/shopcartStore'
+import userStore from '@/store/userStore'
+import addressStore from '@/store/addressStore'
 
 Vue.use(Vuex)
 
@@ -14,7 +16,18 @@ const Store = new Vuex.Store({
 		cartPay: state => state.cart.cartPay,
 		sellerInfo: state => state.common.sellerInfo,
 		sellerList: state => state.common.sellerList,
-		orderList: state => state.order.orderList
+		orderList: state => state.order.orderList,
+		token: state => state.user.token,
+		email: state => state.user.email,
+		picurl: state => state.user.picurl,
+		nickname: state => state.user.nickname,
+		sex: state => state.user.sex,
+		waller: state => state.user.waller,
+		birth: state => state.user.birth,
+		acount: state => state.user.acount,
+		userAddress: state => state.address.userAddress,
+		adrSelect: state => state.address.adrSelect,
+		createOrder: state => state.order.createOrder
 	},
 	mutations: {
 		initSellerInfo(state, data) {
@@ -63,9 +76,11 @@ const Store = new Vuex.Store({
 		}
 	},
 	modules: {
+		address: addressStore,
 		common: commonStore,
+		cart: shopcartStore,
 		order: orderStore,
-		cart: shopcartStore
+		user: userStore,
 	}
 })
 

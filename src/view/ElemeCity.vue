@@ -1,19 +1,21 @@
 <template>
-    <div class="map-view">
-        <div class="order-header-title">
-            <div class="seller-back" @click="toHome"></div>
-            地区选择
-        </div>
-        <vue-put-to class="map-view-scroll">
+    <transition name="all-view-overlay">
+        <div class="map-view">
+            <div class="order-header-title">
+                <div class="seller-back" @click="toHome"></div>
+                地区选择
+            </div>
             <div class="map-city-menu">
                 <span v-for="(item, index) in cityList" :key="item.idx + 'keyCity'" @click="toScroll" :data-index="index">{{item.idx}}</span>
             </div>
-            <div class="city-list" v-for="(item, index) in cityList" :key="item.idx + 'list'">
-                <div class="letter-title">{{item.idx}}</div>
-                <div class="city-item" v-for="(_item,_index) in item.cities" :key="_item.id + 'city'" :data-id="_item.id">{{_item.name}}</div>
-            </div>
-        </vue-put-to>
-    </div>
+            <vue-put-to class="map-view-scroll">
+                <div class="city-list" v-for="(item, index) in cityList" :key="item.idx + 'list'">
+                    <div class="letter-title">{{item.idx}}</div>
+                    <div class="city-item" v-for="(_item,_index) in item.cities" :key="_item.id + 'city'" :data-id="_item.id">{{_item.name}}</div>
+                </div>
+            </vue-put-to>
+        </div>
+    </transition>
 </template>
 <style>
     .letter-title {
@@ -86,7 +88,8 @@
             },
             initData() {
                 this.$ajax(api.getCity()).then(e => {
-                    this.cityList = e.list
+                    console.log(e)
+                    this.cityList = e.result.data
                 }).catch(err => {
                     console.log(err)
                 })
@@ -112,6 +115,7 @@
         width: 100vw;
         height: 100vh;
         padding-top: 50px;
+        position: relative;
     }
     
     .map-view>.order-header-title {
@@ -124,7 +128,6 @@
     .map-view-scroll {
         width: 100%;
         height: 100%;
-        position: relative;
     }
     
     .map-city-menu {
@@ -135,6 +138,7 @@
         right: 0;
         top: 50%;
         transform: translateY(-50%);
+        z-index: 200;
     }
     
     .map-city-menu span {

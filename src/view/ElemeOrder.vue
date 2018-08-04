@@ -8,9 +8,11 @@
                 <router-link to="refund" :class="router === 'orderRefund' ? 'sv-nav sv-nav-active' : 'sv-nav'">退款订单</router-link>
             </div>
         </div>
-        <keep-alive>
-            <router-view class="order-page-box"></router-view>
-        </keep-alive>
+        <transition name="tab-inner-view">
+            <keep-alive>
+                <router-view class="order-page-box"></router-view>
+            </keep-alive>
+        </transition>
     </div>
 </template>
 <style>
@@ -27,22 +29,22 @@
     export default {
         data() {
             return {
-                
+
             }
         },
         components: {
-            
+
         },
         beforeRouteEnter: (to, from, next) => {
             next(vm => {
-                console.log(vm,to)
+
             })
         },
         created() {
 
         },
         methods: {
-            
+
         },
         computed: {
             ...mapGetters([
@@ -61,16 +63,17 @@
         background: #F6F6F6;
     }
     
-.order-header {
-    width: 100%;
-    height: 98px;
-    border-bottom: 1px solid #F6F6F6;
-    background: #FFF;
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 2000;
-}
+    .order-header {
+        width: 100%;
+        height: 98px;
+        border-bottom: 1px solid #F6F6F6;
+        background: #FFF;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 2000;
+    }
+    
     .order-menu {
         height: 50px;
         display: flex;
@@ -84,7 +87,6 @@
         overflow: hidden;
         padding-top: 98px;
     }
-    
     
     .order-nav {
         width: 33.333333%;

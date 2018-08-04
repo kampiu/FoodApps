@@ -10,7 +10,8 @@
                 </div>
             </div>
             <div class="attr-footer">
-                <span>￥{{data.pro_price}}</span><div class="attr-footer-item" v-for="(item, index) in data.pro_select" :key="item + 'sohwparam'">{{item}}</div>
+                <span>￥{{data.pro_price}}</span>
+                <div class="attr-footer-item" v-for="(item, index) in data.pro_select" :key="item + 'sohwparam'">{{item}}</div>
                 <div class="addCart" @click="addCart">加入购物车</div>
             </div>
         </div>
@@ -23,22 +24,22 @@
         mapMutations,
         mapGetters
     } from 'vuex'
-    
+
     export default {
-        props: ["data","show"],
+        props: ["data", "show"],
         data() {
             return {
-                
+
             }
         },
         created() {
-            
+
         },
         methods: {
-            selectAttr(e){
-                this.$emit("selectAttr",e.target.dataset.list, e.target.dataset.param)
+            selectAttr(e) {
+                this.$emit("selectAttr", e.target.dataset.list, e.target.dataset.param)
             },
-            addCart(e){
+            addCart(e) {
                 this.$emit("addAttrCart", this.data)
                 this.$emit("toggle")
             },
@@ -48,9 +49,9 @@
                 }
             }
         },
-        watch:{
-            "show"(to, from){
-                if(to && this.data.pro_select.length === 0){
+        watch: {
+            "show" (to, from) {
+                if(to && this.data.pro_select.length === 0) {
                     this.data.pro_param.forEach((item, index) => {
                         this.data.pro_select.push(item.values[0])
                     })
@@ -83,90 +84,102 @@
         animation-fill-mode: forwards;
         animation-timing-function: ease-in;
     }
-    .production-attr-context{
-        width:70vw;
+    
+    .production-attr-context {
+        width: 70vw;
         min-height: 50vw;
-        position:absolute;
-        left:50%;
-        top:50%;
+        position: absolute;
+        left: 50%;
+        top: 50%;
         transform: translate(-50%, -50%);
-        background:#FFF;
+        background: #FFF;
         border-radius: 12px;
-        padding:10px 10px 50px 10px;
+        padding: 10px 10px 50px 10px;
         overflow: hidden;
         animation: viewShow 0.5s ease 0s 1;
         z-index: 20;
     }
-    @keyframes viewShow{
-    	from{
-    	    transform: translate(-50%, -62%);
-    	    opacity: 0;
-    	}
-    	to{
-    	    transform: translate(-50%, -50%);
-    	    opacity: 1;
-    	}
+    
+    @keyframes viewShow {
+        from {
+            transform: translate(-50%, -62%);
+            opacity: 0;
+        }
+        to {
+            transform: translate(-50%, -50%);
+            opacity: 1;
+        }
     }
-    .production-attr-title{
-        font-size:.24rem;
-        color:#333;
+    
+    .production-attr-title {
+        font-size: .24rem;
+        color: #333;
         text-align: center;
         line-height: .36rem;
         font-weight: 700;
     }
-    .attr-title{
+    
+    .attr-title {
         line-height: .8rem;
         font-size: .24rem;
-        padding-left:6px;
+        padding-left: 6px;
         font-size: 600;
     }
-    .attr-param{
-        display:flex;
+    
+    .attr-param {
+        display: flex;
         flex-wrap: wrap;
     }
-    .attr-item{
-        width:1.38rem;
-        height:.5rem;
+    
+    .attr-item {
+        width: 1.38rem;
+        height: .5rem;
         text-align: center;
         line-height: .48rem;
-        border:1px solid #EDEDED;
-        background:#FFF;
-        color:#333;
-        margin:0 .11rem .15rem;
+        border: 1px solid #EDEDED;
+        background: #FFF;
+        color: #333;
+        margin: 0 .11rem .15rem;
+        overflow: hidden;
     }
-    .attr-item-active{
-        border:1px solid #3f56ff;
-        background:#cfd5ff;
-        color:#3f56ff;
+    
+    .attr-item-active {
+        border: 1px solid #3f56ff;
+        background: #cfd5ff;
+        color: #3f56ff;
     }
-    .attr-footer{
-        position:absolute;
-        left:0;
-        bottom:0;
-        width:100%;
-        height:44px;
-        background:#F5F5F5;
-        display:flex;
-        padding:0 10px;
+    
+    .attr-footer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 44px;
+        background: #F5F5F5;
+        display: flex;
+        padding: 0 10px;
         align-items: center;
     }
-    .attr-footer span{
-        color:#FB554B;
+    
+    .attr-footer span {
+        color: #FB554B;
         font-size: .32rem;
         font-weight: 800;
-        margin-right:6px;
+        margin-right: 6px;
     }
-    .attr-footer .addCart{
-        width:100px;
-        height:28px;
+    
+    .attr-footer .addCart {
+        width: 100px;
+        height: 28px;
         border-radius: 14px;
-        background:#0387FF;
-        color:#FFF;
-        margin-left:auto;
+        background: #0387FF;
+        color: #FFF;
+        margin-left: auto;
         line-height: 28px;
         text-align: center;
     }
-    .attr-footer-item{
-        margin-right:4px;
+    
+    .attr-footer-item {
+        margin-right: 4px;
     }
 </style>

@@ -84,18 +84,20 @@
         background: #FFF;
         position: absolute;
         left: -50vw;
-        top: -14vw;
+        top: -20%;
         border-radius: 50%;
         z-index: -1;
     }
     
-    .seller-put-context>img {
-        width: 64vw;
-        height: 64vw;
+    .seller-put-context > img {
+        width: 160px;
+        height: 160px;
         position: absolute;
-        left: 18vw;
-        top: -70%;
-        background-color: red;
+        /*left: 50%;
+        top: -50%;*/
+            left:50%;
+        transform: translateX(-50%);
+        background-color:#FBFCFD;
         z-index: 1600;
         border-radius: 6px;
         box-shadow: 0 2px 7px rgba(0, 0, 0, .15);
@@ -106,33 +108,46 @@
         -webkit-animation-timing-function: ease-in;
     }
     
+    @keyframes productionEnlarge {
+        from {
+            width: 20px;
+            height:20;
+            top: -50%;
+        }
+        to {
+            width: 260px;
+            height:260px;
+            top: -66%;
+        }
+    }
+    
     .seller-put-context>div {
         margin-bottom: 0.1rem;
     }
     
     .seller-put-name {
-        font-size: .38rem;
-        line-height: .48rem;
+        font-size: 14px;
+        line-height: 20px;
         font-weight: 800;
         color: #333;
     }
     
     .seller-put-describe {
-        max-height: .64rem;
-        font-size: .24rem;
+        max-height: 48px;
+        font-size: 12px;
         color: #999;
-        line-height: .32rem;
+        line-height:24px;
         -webkit-line-clamp: 2;
     }
     
     .seller-put-sales {
-        font-size: .24rem;
+        font-size: 12px;
         color: #CCC;
     }
     
     .seller-put-price {
-        height: .6rem;
-        font-size: .4rem;
+        height: 32px;
+        font-size: 18px;
         color: #FB4E44;
         font-weight: 800;
         display: flex;

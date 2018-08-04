@@ -124,6 +124,8 @@
         line-height: 50px;
         text-align: center;
         background: -webkit-linear-gradient(left, #03AAFF, #0387FF);
+        position:relative;
+        z-index: 200;
     }
     
     .order-nav {
@@ -203,8 +205,13 @@
         justify-content: space-between;
         padding: 0 6px;
         height: 22px;
+        overflow: hidden;
     }
-    
+    .order-info-item > div{
+        overflow: hidden;
+        height:22px;
+        line-height: 22px;
+    }
     .order-info-item span {
         margin-right: auto;
         margin-left: 4px;

@@ -117,7 +117,7 @@
             },
             getSeller(callback) {
                 this.$ajax.get(api.getSellerList(this.page, this.limit, this.type)).then(res => {
-                    res.list.forEach((item, index) => {
+                    res.result.data.forEach((item, index) => {
                         this.sellerList.push(item)
                     })
                     callback && callback()
@@ -146,7 +146,7 @@
                         arr = [
                             []
                         ]
-                    res.list.forEach((item, index) => {
+                    res.result.data.forEach((item, index) => {
                         if(index < (_min + 1) * _len) {
                             arr[_min].push(item)
                         } else {

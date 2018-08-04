@@ -24,7 +24,7 @@
         props: ["sellerInfo", "cartCount"],
         data() {
             return {
-
+                
             }
         },
         components: {
@@ -38,6 +38,7 @@
                 this.$emit("toggleCart")
             },
             addOrder() {
+                if(this.token === '') return
                 if(this.cartPay[this.sellerInfo.sel_ele_id] > parseFloat(this.sellerInfo.sel_min_distribution)) {
                     let tel = this.tellCheck(this.sellerInfo.sel_tell)
                     let data = {
@@ -57,10 +58,13 @@
                         price: (parseFloat(this.sellerInfo.sel_distribution) + parseFloat(this.cartPay[this.sellerInfo.sel_ele_id])).toFixed(2),
                         order: this.cartList[this.sellerInfo.sel_ele_id]
                     }
-                    this.$store.commit("addOrder", data)
-                    this.$router.push({
-                        path: '/order'
-                    })
+                    console.log(data)
+//                  this.$store.commit("addOrder", data)
+                    this.$store.commit("order/initCreate", data)
+//                  this.$router.push({
+//                      path: '/order'
+//                  })
+                    this.$router.replace("/orderConfirm")
                 }
             },
             tellCheck(tel) {
@@ -85,7 +89,8 @@
         computed: {
             ...mapGetters([
                 'cartList',
-                'cartPay'
+                'cartPay',
+                'token'
             ])
         },
         filters: {

@@ -1,8 +1,5 @@
 <template>
     <div class="search-bar">
-        <!--<div :class="isFocus ? 'search-bar-nav search-bar-hide' : 'search-bar-nav'">
-            <div class="search-slide-menu"></div>
-        </div>-->
         <div :class="isFocus ? 'search-bar-nav search-bar-hide' : 'search-bar-nav'">
             <div class="search-slide-menu"></div>
         </div>
@@ -18,27 +15,12 @@
         <div :class="isFocus ? 'search-bar-nav search-bar-hide' : 'search-bar-nav'">
             <div class="location"></div>
         </div>
-        <!--<div :class="isFocus ? 'search-bar-nav search-bar-hide' : 'search-bar-nav'">
-            <router-link to="/player" class="search-play"></router-link>
-        </div>-->
         <div :class="isFocus ? 'search-list search-list-active' : 'search-list'">
             <div class="search-tip">
                 {{word == "" ? "" : '搜索：' + word}}
             </div>
             <div class="search-result-content" @click="cancel">
                 <seller-item :data="item" v-for="(item, index) in result" :key="item.sel_ele_id + 'searchresult'"></seller-item>
-                <!--<ul class="search-result">
-                    <li class="search-result-item" v-for="(item,index) in result" :key="item.sel_ele_id + 'searchresult'">
-                        <div class="search-item-icon">
-                            <div></div>
-                        </div>
-                        <div class="search-item-context">
-                            <div class="search-item-name"></div>
-                            <div class="search-item-name"></div>
-                            <div class="search-item-name"></div>
-                        </div>
-                    </li>
-                </ul>-->
             </div>
         </div>
     </div>
@@ -99,8 +81,7 @@
             },
             getResult() {
                 this.$ajax(api.search(this.word)).then(e => {
-                    this.result = e.list
-                    console.log(e)
+                    this.result = e.result.data
                 }).catch(err => {
                     console.log(err)
                 })
@@ -161,9 +142,9 @@
     
     .search-bar-input {
         /*width: 5.78rem;*/
-        height: 0.52rem;
+        height:30px;
         max-height: 30px;
-        border-radius: 0.26rem;
+        border-radius: 15px;
         position: relative;
         overflow: hidden;
         display: flex;
@@ -177,12 +158,12 @@
         width: 100%;
         height: 100%;
         background: #FFF;
-        border-radius: 0.26rem;
+        border-radius: 15px;
     }
     
     .search-icon {
         width: 100%;
-        height: 0.52rem;
+        height: 30px;
         max-height: 30px;
         font-size: 16px;
         position: absolute;
@@ -198,16 +179,16 @@
     }
     
     .search-icon-active {
-        width: 1.2rem
+        width:60px
     }
     
     .search-cancel {
         width: 0;
-        height: 0.52rem;
+        height: 30px;
         text-align: center;
         font-size: 14px;
         color: #FFF;
-        line-height: 0.52rem;
+        line-height: 30px;
         transition: all linear .2s;
         opacity: 0;
     }
@@ -232,13 +213,13 @@
     .search {
         height: 100%;
         width: 100%;
-        border-radius: 0.26rem;
+        border-radius: 15px;
         -webkit-appearance: none;
         border: none;
         outline: none;
         background: none;
         color: #333;
-        padding: 0 28px 0 .96rem;
+        padding: 0 28px 0 60px;
         z-index: 30;
         font-size: 14px;
     }
@@ -271,7 +252,7 @@
     .search-tip {
         height: .6rem;
         max-height: 50px;
-        padding: 0 .14rem;
+        padding: 0 16px;
         display: -ms-flexbox;
         display: flex;
         -ms-flex-align: center;
@@ -288,99 +269,10 @@
         background: #FBFCFD;
         margin-bottom: 0.6rem;
     }
-    
-    /*.search-songs-view {
-        width: 100%;
-        height: 100%;
-    }*/
-    
-    /*.search-songs-item {
-        width: 100%;
-        height: 0.8rem;
-        max-height: 50px;
-        align-items: center;
-        display: flex;
-        padding: 0;
-        overflow: hidden;
-    }
-    
-    .search-songs-index {
-        width: 0.8rem;
-        max-width: 50px;
-        height: 0.8rem;
-        max-height: 50px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex: 0 0 auto;
-        color: #929293;
-        font-size: 12px;
-    }
-    
-    .search-songs-msg {
-        max-width: 4.8rem;
-        max-height: 50px;
-        flex: 1 1 auto;
-        height: 100%;
-        display: flex;
-        padding: 0.01rem 0;
-        flex-direction: column;
-        justify-content: center;
-        border-bottom: 1px solid #EEEFF0;
-        padding-right: 20px;
-    }
-    
-    .search-songs-name {
-        font-size: 14px;
-        height: 0.3rem;
-        max-height: 28px;
-        display: flex;
-        align-items: center;
-        flex: 0 0 auto;
-        color: #1A1A1C;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-    
-    .search-songs-singer {
-        font-size: 12px;
-        color: #636465;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-    
-    .search-songs-console {
-        width: 1.6rem;
-        max-width: 160px;
-        padding-right: 0.1rem;
-        height: 0.8rem;
-        max-height: 50px;
-        flex: 0 0 auto;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        border-bottom: 1px solid #EEEFF0;
-    }
-    
-    .search-songs-console>img {
-        width: 0.36rem;
-        height: 0.36rem;
-        max-width: 20px;
-        max-height: 20px;
-    }
-    
-    @media only screen and (min-width: 768px) {
-        .search-songs-msg {
-            max-width: 6rem;
-        }
-    }
-    
     .search-result-content {
         width: 100%;
         height: 100%;
-        padding-left: 0.2rem;
+        padding-bottom: 0.8rem;
         overflow: scroll;
-    }*/
+    }
 </style>

@@ -26,23 +26,21 @@
         mapGetters
     } from 'vuex'
     import store from '@/store/store'
-    
+
     export default {
         data() {
             return {
-                
+
             }
         },
         components: {
 
         },
         created() {
-            this.get()
+            
         },
         methods: {
-            get(){
-                console.log(this)
-            }
+            
         },
         computed: {
             ...mapGetters([
@@ -61,8 +59,8 @@
         height: 52px;
         overflow: hidden;
         display: flex;
-        border-top:1px solid #FEFEFE;
-        background:#FFF;
+        border-top: 1px solid #FEFEFE;
+        background: #FFF;
     }
     
     .app-box {
@@ -86,29 +84,36 @@
         text-align: center;
         margin-top: 2px;
     }
-    .tabbar-item > div{
+    
+    .tabbar-item>div {
         width: 21px;
         height: 21px;
         background-size: 100% auto;
         background-position: center center;
         background-repeat: no-repeat;
     }
-    .tabbar-home{
+    
+    .tabbar-home {
         background-image: url("https://billson.oss-cn-shenzhen.aliyuncs.com/React-Music/ele_home.svg");
     }
-    .tabbar-home-active{
+    
+    .tabbar-home-active {
         background-image: url("https://billson.oss-cn-shenzhen.aliyuncs.com/React-Music/ele_home_active.svg");
     }
-    .tabbar-order{
+    
+    .tabbar-order {
         background-image: url("https://billson.oss-cn-shenzhen.aliyuncs.com/React-Music/ele_order.svg");
     }
-    .tabbar-order-active{
+    
+    .tabbar-order-active {
         background-image: url("https://billson.oss-cn-shenzhen.aliyuncs.com/React-Music/ele_order_active.svg");
     }
-    .tabbar-personal{
+    
+    .tabbar-personal {
         background-image: url("https://billson.oss-cn-shenzhen.aliyuncs.com/React-Music/ele_personal.svg");
     }
-    .tabbar-personal-active{
+    
+    .tabbar-personal-active {
         background-image: url("https://billson.oss-cn-shenzhen.aliyuncs.com/React-Music/ele_personal_active.svg");
     }
 </style>

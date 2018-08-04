@@ -1,5 +1,5 @@
-const _baseUrl = 'https://api.billson.club/api/'
-//const _baseUrl = 'http://localhost:3002/api/'
+//const _baseUrl = 'https://api.billson.club/api/'
+const _baseUrl = 'http://localhost:3002/api/'
 
 
 export default {
@@ -20,5 +20,29 @@ export default {
 	},
 	getCity(){
 		return _baseUrl + "eleme/map"
+	},
+	modifyIcon(){
+		return _baseUrl + "user/modify"
+	},
+	login(){
+		return _baseUrl + "user/login"
+	},
+	register(){
+		return _baseUrl + "user/register"
+	},
+	getUserInfo(){
+		return _baseUrl + "user/getinfo"
+	},
+	addOrder(){
+		return _baseUrl + "eleme/addOrder"
+	},
+	addAddress(){
+		return _baseUrl + "user/addAddress"
+	},
+	getAddress(){
+		return _baseUrl + "user/address"
+	},
+	getPhoneCode(){
+		return _baseUrl + "user/code"
 	}
 }

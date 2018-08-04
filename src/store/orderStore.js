@@ -1,12 +1,16 @@
 const orderStore = {
 	namespaced: true,
 	state: {
-		orderList:[]
+		orderList:[],
+		createOrder:{}
 	},
 	getters: {
 		
 	},
 	mutations: {
+		initCreate(state, data){
+			state.createOrder = data
+		},
 		initOrder(state){
 			state.orderList = localStorage.getItem("eleme_orderList") ? JSON.parse(localStorage.getItem("eleme_orderList")) : []
 		},

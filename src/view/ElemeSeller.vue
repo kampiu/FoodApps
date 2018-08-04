@@ -17,9 +17,11 @@
                 <router-link to="comment" :class="router === 'sellerComment' ? 'sv-nav sv-nav-active' : 'sv-nav'">评价</router-link>
                 <router-link to="info" :class="router === 'sellerInfo' ? 'sv-nav sv-nav-active' : 'sv-nav'">商家</router-link>
             </div>
-            <keep-alive>
-                <router-view class="seller-page-box"></router-view>
-            </keep-alive>
+            <transition name="tab-inner-view">
+                <keep-alive>
+                    <router-view class="seller-page-box"></router-view>
+                </keep-alive>
+            </transition>
         </div>
     </div>
 </template>
@@ -63,8 +65,8 @@
         methods: {
             initData(id) {
                 this.$ajax.get(api.getSeller(id)).then(res => {
-                    this.cataId = res.list[0].list[0].cla_ele_id
-                    this.$store.commit("initSellerInfo", res.list[0])
+                    this.cataId = res.result.data[0].sel_ele_id
+                    this.$store.commit("initSellerInfo", res.result.data[0])
                 }).catch(err => {
                     console.log(err)
                 })
@@ -498,21 +500,6 @@
     .distribution-pay {
         font-size: .32rem;
         font-weight: 800;
-    }
-    
-    @keyframes productionEnlarge {
-        from {
-            width: 10vw;
-            height: 10vw;
-            left: 40vw;
-            top: -50%;
-        }
-        to {
-            width: 64vw;
-            height: 64vw;
-            left: 18vw;
-            top: -70%;
-        }
     }
     
     .sv-ri-attr {
