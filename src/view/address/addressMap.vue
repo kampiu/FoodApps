@@ -40,7 +40,8 @@
                 Mk: null,
                 adrList: [],
                 search: null,
-                word: ""
+                word: "",
+                History:""
             }
         },
         components: {
@@ -48,6 +49,7 @@
         },
         beforeRouteEnter: (to, from, next) => {
             next(vm => {
+                vm.History = from.path
                 vm.init()
             })
         },
@@ -106,7 +108,7 @@
                     city: this.adrList[parseInt(e.target.dataset.index)].city,
                 }
                 this.$store.commit("address/addAdrSelect", data)
-                this.$router.replace("/address/add")
+                this.$router.replace(this.History)
             },
             initMove() {
                 this.Map.addEventListener('moveend', this.move)
@@ -123,7 +125,8 @@
                 })
             },
             backTo() {
-                this.$router.replace("/address/add")
+                this.$router.replace(this.History)
+//              window.history.go(-1)
             }
         },
         activated() {

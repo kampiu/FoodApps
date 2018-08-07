@@ -2,7 +2,7 @@
     <div>
         <vue-put-to class="order-view-scroll">
             <div class="order-list">
-                <order-item  v-for="(item, index) in orderList" :key="item.sellerInfo.id + item.time + item.orderId" :item="item" v-if="item.type == 3"></order-item>
+                <order-item  v-for="(item, index) in orderList" :key="item.seller.id + item.orderAddtime + item.orderCode" :item="item" v-if="item.orderState == 3"></order-item>
             </div>
         </vue-put-to>
     </div>
@@ -55,14 +55,6 @@
             },
             loadmore(loaded) {
                 loaded('done')
-            },
-            finishOrder(e){
-                this.$store.commit("order/finishOrder", e.target.dataset.id)
-                console.log(e.target.dataset.id)
-            },
-            refundOrder(e){
-                this.$store.commit("order/refundOrder", e.target.dataset.id)
-                console.log(e.target.dataset.id)
             }
         },
         computed: {

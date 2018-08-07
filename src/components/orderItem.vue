@@ -1,29 +1,31 @@
 <template>
     <div class="order-item">
         <div class="order-selicon">
-            <div :style="{backgroundImage: 'url(' + item.sellerInfo.icon + ')'}"></div>
+            <router-link :to="'/seller/' + item.seller.id + '/home'"><div :style="{backgroundImage: 'url(' + item.seller.icon + ')'}"></div></router-link>
         </div>
         <div class="order-context">
-            <div class="order-selname">{{item.sellerInfo.sellerName}}<span>{{item.type == 1 ? '商家已接单' : item.type == 2 ? '订单完成' : '退款'}}</span></div>
-            <div class="order-time">{{item.time | timeForm}}</div>
-            <router-link :to="{name:'orderInfo',params: { id:item.orderId}}" class="order-info-list">
-                <div class="order-info-item" v-for="(_item, _index) in item.order" :key="_item.pro_id + item.time + item.orderId + _item.pro_select">
-                    <div>{{_item.pro_name}}
-                        <span v-for="(_item_, _index_) in _item.pro_select" :key="item.time + _item_">{{_item_}}</span>
+            <div class="order-selname">{{item.seller.sellerName}}<span>{{item.orderState == 1 ? '商家已接单' : item.orderState == 2 ? '订单完成' : '退款'}}</span></div>
+            <div class="order-time">{{item.orderAddtime | timeForm}}</div>
+            <router-link :to="{name:'orderInfo',params: { id:item.orderCode}}" class="order-info-list">
+                <div class="order-info-item" v-for="(_item, _index) in item.order" :key="_item.id + item.orderAddtime + _item.attr">
+                    <div>{{_item.name}}
+                        <span v-for="(_item_, _index_) in _item.attr" :key="item.orderAddtime + _item_">{{_item_}}</span>
                     </div>
-                    <span>x{{_item.pro_num}}</span>
+                    <span>x{{_item.num}}</span>
                 </div>
             </router-link>
-            <div class="order-info-price">￥{{item.price}}</div>
-            <div class="order-item-operation" v-if="item.type == 1">
-                <div :data-id="item.orderId" @click="refundOrder">退款</div>
-                <div :data-id="item.orderId" @click="finishOrder">确认订单</div>
+            <div class="order-info-price">￥{{item.orderPrice}}</div>
+            <div class="order-item-operation" v-if="item.orderState == 1">
+                <div :data-id="item.orderCode" @click="refundOrder">退款</div>
+                <div :data-id="item.orderCode" @click="finishOrder">确认订单</div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+    import api from '@/common/api'
+    
     export default {
         props:["item"],
         data() {
@@ -39,10 +41,18 @@
         },
         methods: {
             finishOrder(e) {
-                this.$store.commit("order/finishOrder", e.target.dataset.id)
+                this.$ajax.post(api.updateOrder(),{id:e.target.dataset.id,state:2}).then(res => {
+                    res.code === 200 && this.$store.commit("order/finishOrder", e.target.dataset.id)
+                }).catch(err => {
+                    console.log("更该订单状态失败!",err)
+                })
             },
             refundOrder(e) {
-                this.$store.commit("order/refundOrder", e.target.dataset.id)
+                this.$ajax.post(api.updateOrder(),{id:e.target.dataset.id,state:3}).then(res => {
+                    res.code === 200 && this.$store.commit("order/refundOrder", e.target.dataset.id)
+                }).catch(err => {
+                    console.log("更该订单状态失败!",err)
+                })
             }
         },
         filters: {

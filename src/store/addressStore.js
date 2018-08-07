@@ -18,7 +18,6 @@ const commonStore = {
 	},
 	mutations: {
 		initAdrList(state, list) {
-			console.log(list)
 			state.userAddress = list
 		},
 		pushAddress(state, data){
@@ -26,6 +25,14 @@ const commonStore = {
 		},
 		addAdrSelect(state, data) {
 			state.adrSelect = data
+		},
+		updateAddress(state, data){
+			for(let i = 0,len = state.userAddress.length;i < len;i++){
+				if(parseInt(state.userAddress[i].adr_id) === parseInt(data.adr_id)){
+					state.userAddress[i] = data
+					break
+				}
+			}
 		},
 		initaddAdrSelect(state) {
 			state.adrSelect = {

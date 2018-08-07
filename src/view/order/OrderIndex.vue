@@ -1,8 +1,8 @@
 <template>
     <div>
-        <vue-put-to class="order-view-scroll">
+        <vue-put-to class="order-view-scroll" :bottom-load-method="loadmore" :bottom-config="scrollConfigBottom" :top-load-method="refresh" :top-config="scrollConfigTop">
             <div class="order-list">
-                <order-item  v-for="(item, index) in orderList" :key="item.sellerInfo.id + item.time + item.orderId" :item="item"></order-item>
+                <order-item v-for="(item, index) in orderList" :key="item.orderCode + 'order-code'" :item="item"></order-item>
             </div>
         </vue-put-to>
     </div>
@@ -40,6 +40,8 @@
                     stayDistance: 50,
                     triggerDistance: 50
                 },
+                page: 1,
+                limit: 10
             }
         },
         components: {
@@ -51,15 +53,44 @@
         },
         methods: {
             refresh(loaded) {
-                loaded('done')
+                this.initSearch(() => {
+                    loaded('done')
+                })
             },
             loadmore(loaded) {
-                loaded('done')
+                this.getOrderList(() => {
+                    loaded('done')
+                })
             },
-            finishOrder(e){
+            getOrderList(callback) {
+                this.page++
+                this.$ajax.post(api.getOrderList(), {
+                    page: this.page,
+                    limit: this.limit
+                }).then(res => {
+                    res.code === 200 && this.$store.commit("order/addOrder",res.result)
+                    res.code !== 200 && this.page--
+                    callback && callback()
+                }).catch(err => {
+                    console.log(err)
+                })
+            },
+            initSearch(callback) {
+                this.page = 1
+                this.$ajax.post(api.getOrderList(), {
+                    page: this.page,
+                    limit: this.limit
+                }).then(res => {
+                    res.code === 200 && this.$store.commit("order/initOrder",res.result)
+                    callback && callback()
+                }).catch(err => {
+                    console.log(err)
+                })
+            },
+            finishOrder(e) {
                 this.$store.commit("order/finishOrder", e.target.dataset.id)
             },
-            refundOrder(e){
+            refundOrder(e) {
                 this.$store.commit("order/refundOrder", e.target.dataset.id)
             }
         },
@@ -111,7 +142,7 @@
     .order-view-scroll {
         width: 100vw;
         height: 100vh;
-        overflow: hidden;
+        /*overflow: hidden;*/
         padding-bottom: 52px;
     }
     
@@ -124,7 +155,7 @@
         line-height: 50px;
         text-align: center;
         background: -webkit-linear-gradient(left, #03AAFF, #0387FF);
-        position:relative;
+        position: relative;
         z-index: 200;
     }
     
@@ -207,11 +238,13 @@
         height: 22px;
         overflow: hidden;
     }
-    .order-info-item > div{
+    
+    .order-info-item>div {
         overflow: hidden;
-        height:22px;
+        height: 22px;
         line-height: 22px;
     }
+    
     .order-info-item span {
         margin-right: auto;
         margin-left: 4px;

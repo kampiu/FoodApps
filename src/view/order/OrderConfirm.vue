@@ -11,37 +11,37 @@
                 <div class="order-address">
                     <router-link to="/address" class="address-box-not" v-if="!notAdr">+ 添加收货地址</router-link>
                     <div class="address-box" v-if="notAdr">
-                        <div class="adr-location">{{userAddress[0] ? userAddress[0].adr_location : ''}} {{userAddress[0] ? userAddress[0].adr_infon : ''}}</div>
-                        <div class="adr-consignee">收货人:{{userAddress[0] ? userAddress[0].adr_consignee : ''}} <span>{{userAddress[0] ? userAddress[0].adr_tell : ''}}</span></div>
+                        <div class="adr-location">{{seltAdr ? seltAdr.adr_location : ''}} {{seltAdr ? seltAdr.adr_info : ''}}</div>
+                        <div class="adr-consignee">收货人:{{seltAdr ? seltAdr.adr_consignee : ''}} <span>{{seltAdr ? seltAdr.adr_tell : ''}}</span></div>
                         <div class="adr-btn" @click="toSelectAdr"></div>
                     </div>
-                    <div class="orderinfo-time">立即送出<span>大约{{createOrder.sellerInfo.leadTime ? createOrder.sellerInfo.leadTime : '30'}}分钟时间送达</span></div>
+                    <div class="orderinfo-time">立即送出<span>大约{{orderData.seller.leadTime ? orderData.seller.leadTime : '30'}}分钟时间送达</span></div>
                 </div>
                 <div class="orderinfo-list">
-                    <div class="order-info-seller">{{createOrder.sellerInfo.sellerName}}</div>
-                    <div class="order-item-by-list" v-for="(item, index) in createOrder.order" :key="item.pro_id + item.pro_select + 'coi'">
+                    <div class="order-info-seller">{{orderData.seller.sellerName}}</div>
+                    <div class="order-item-by-list" v-for="(item, index) in orderData.order" :key="item.id + item.attr + 'coi'">
                         <div class="order-item-by-list-img">
-                            <div :style="{backgroundImage:'url(' + item.pro_icon + ')'}"></div>
+                            <div :style="{backgroundImage:'url(' + item.icon + ')'}"></div>
                         </div>
                         <div class="order-item-by-list-context">
-                            <div class="font-break" style="display:flex;justify-content: space-between;">{{item.pro_name}}<span>￥{{item.pro_price}}</span></div>
+                            <div class="font-break" style="display:flex;justify-content: space-between;">{{item.name}}<span>￥{{item.price}}</span></div>
                             <div>
                                 <div class="order-item-by-list-attr">
-                                    <span v-for="(_it, _in) in item.pro_select">{{_it}}</span>
+                                    <span v-for="(_it, _in) in item.attr">{{_it}}</span>
                                 </div>
-                                <span style="color:#333">x{{item.pro_num}}</span>
+                                <span style="color:#333">x{{item.num}}</span>
                             </div>
                         </div>
                     </div>
                     <div class="order-context-item">包装费<span>￥0</span></div>
-                    <div class="order-context-item">配送费<span>￥{{createOrder.sellerInfo.distribution}}</span></div>
+                    <div class="order-context-item">配送费<span>￥{{orderData.seller.distribution}}</span></div>
                 </div>
                 <div class="order-bar">
-                    <div class="order-bar-info">已优惠0元<span>合计:￥{{createOrder.price}}</span></div>
+                    <div class="order-bar-info">已优惠0元<span>合计:￥{{orderData.orderPrice}}</span></div>
                     <div class="order-bar-nav" @click="addOrder">确认订单</div>
                 </div>
             </div>
-            <address-put :data="userAddress" :show="isShowAdrList" @toSelectAdr="toSelectAdr"></address-put>
+            <address-put :data="userAddress" :show="isShowAdrList" @toSelectAdr="toSelectAdr" @selectAddress="selectAddress"></address-put>
         </div>
     </transition>
 </template>
@@ -58,8 +58,13 @@
         data() {
             return {
                 notAdr: false,
-                adrId: null,
-                isShowAdrList:false
+                isShowAdrList:false,
+                seltAdr:{},
+                orderData:{
+                    seller:{
+                        leadTime:""
+                    }
+                }
             }
         },
         components: {
@@ -68,39 +73,68 @@
         mounted() {
 
         },
+        beforeRouteEnter: (to, from, next) => {
+            next(vm => {
+                if(to.params.id){
+                    vm.initOrderData()
+                }else{
+                    vm.$router.replace(from.path)
+                }
+            })
+        },
         methods: {
+            initOrderData(){
+                console.log(this.$route, this.orderList)
+                this.seltAdr = this.userAddress[0] ? this.userAddress[0] : {}
+                for(let i = 0,len = this.orderList.length;i < len;i++){
+                    if(this.orderList[i].orderCode == this.$route.params.id){
+                        this.orderData = this.orderList[i]
+                        return
+                    }
+                }
+                alert("订单不存在!")
+                this.$router.replace("/home")
+            },
+            selectAddress(data){
+                this.seltAdr = this.userAddress[data.index]
+                this.isShowAdrList = false
+                console.log(data)
+            },
             addOrder() {
                 let order = []
-                this.createOrder.order.forEach((item, index) => {
+                this.orderData.order.forEach((item, index) => {
                     order.push({
-                        id: item.pro_id,
-                        num: item.pro_num,
-                        attr: item.pro_select ? item.pro_select : ''
+                        id: item.id,
+                        num: item.num,
+                        attr: item.attr ? item.attr : ''
                     })
                 })
                 let formData = {
-                    shopId: this.createOrder.sellerInfo.id,
-                    adrId: this.adrId,
+                    shopId: this.orderData.seller.id,
+                    adrId: this.seltAdr.adr_id,
                     order: order
                 }
                 console.log(formData)
                 this.$ajax.post(api.addOrder(), formData).then(res => {
                     console.log(res)
+                    if(res.code === 200){
+                        this.$store.dispatch("order/initNewOrder",{order:res.result,oldId:this.orderData.orderCode})
+                        this.$router.replace("/order/home")
+                    }else{
+                        console.log("订单提交失败!")
+                    }
                 }).catch(err => {
                     console.log("ERROR", err)
                 })
             },
             getAddress() {
-                console.log(this.createOrder)
                 if(this.userAddress.length > 0) {
-                    this.adrId = this.userAddress[0].adr_id
                     this.notAdr = true
                     return
                 }
                 this.$ajax.get(api.getAddress()).then(res => {
-                    if(res.data.length === 0) {
-                        return this.notAdr = false
-                    }
+                    this.notAdr = res.data.length === 0 ? false : true
+                    this.seltAdr = this.userAddress[0] ? this.userAddress[0] : {}
                     res.code === 200 && this.$store.commit("address/initAdrList", res.data)
                 }).catch(err => {
                     console.log("获取地址列表失败", err)
@@ -120,7 +154,8 @@
             ...mapGetters([
                 'userAddress',
                 'createOrder',
-                'sellerInfo'
+                'sellerInfo',
+                'orderList'
             ])
         }
     }
@@ -259,6 +294,7 @@
         height: 30px;
         border-bottom: 1px solid #F0F0F0;
         line-height: 30px;
+        font-weight: 550;
     }
     
     .order-context-item {

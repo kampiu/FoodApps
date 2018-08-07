@@ -23,7 +23,6 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded
 //axios.defaults.headers['Authorization'] = localStorage.getItem("eleme_billson_token") || ""
 
 axios.interceptors.request.use(config => {
-	console.log(config)
 //	config.headers["Content-Type"] = "application/x-www-form-urlencoded"
 	if(config.body && !config.__retryCount) { //判断是否第一次发起请求   与请求的数据是否存在
 		let key = cryptojs.enc.Latin1.parse('5AA765D61D8327DE'),

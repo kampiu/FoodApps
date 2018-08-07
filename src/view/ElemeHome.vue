@@ -120,6 +120,8 @@
                     res.result.data.forEach((item, index) => {
                         this.sellerList.push(item)
                     })
+                    this.scrollConfigTop.doneText = callback ? "加载完成，共加载" + res.result.data.length +"条数据" : "加载完成"
+                    this.scrollConfigBottom.doneText = callback ? "加载完成，共加载" + res.result.data.length +"条数据" : "加载完成"
                     callback && callback()
                 }).catch(err => {
                     console.log("获取数据失败:" + err)

@@ -2,7 +2,7 @@
     <div>
         <vue-put-to class="order-view-scroll">
             <div class="order-list">
-                <order-item  v-for="(item, index) in orderList" :key="item.sellerInfo.id + item.time + item.orderId" :item="item" v-if="item.type == 2"></order-item>
+                <order-item  v-for="(item, index) in orderList" :key="item.seller.id + item.orderAddtime + item.orderCode" :item="item" v-if="item.orderState == 2"></order-item>
             </div>
         </vue-put-to>
     </div>
@@ -48,7 +48,7 @@
         },
         beforeRouteEnter: (to, from, next) => {
             next(vm => {
-                console.log("进来了")
+                
             })
         },
         created() {
@@ -60,12 +60,6 @@
             },
             loadmore(loaded) {
                 loaded('done')
-            },
-            finishOrder(e){
-                this.$store.commit("order/finishOrder", e.target.dataset.id)
-            },
-            refundOrder(e){
-                this.$store.commit("order/refundOrder", e.target.dataset.id)
             }
         },
         computed: {

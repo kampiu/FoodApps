@@ -3,7 +3,7 @@
         <div class="address-view">
             <div class="order-header-title">
                 <div class="seller-back" @click="backTo"></div>
-                修改地址
+                {{templateName === "addressAdd" ? '添加地址' : '修改地址'}}
             </div>
             <vue-put-to class="address-view-scroll">
                 <div class="add-adr-item">
@@ -66,7 +66,9 @@
                     lat: "",
                     lng: ""
                 },
-                canPost: false
+                History: "",
+                canPost: false,
+                templateName:""
             }
         },
         components: {
@@ -74,18 +76,47 @@
         },
         beforeRouteEnter: (to, from, next) => {
             next(vm => {
-                console.log(to.name, to, from)
-                if((to.name === "addressAdd" || to.name === "addressEdit") && from.name !== "addressMap"){
+                if((to.name === "addressAdd" || to.name === "addressEdit") && from.name !== "addressMap") {
+                    vm.templateName = to.name
                     vm.initForm()
                 }
+                if(from.name !== "addressMap") {
+                    vm.History = from.path
+                }
             })
+        },
+        beforeRouteLeave: function(to, from, next) {
+            if(to.name !== 'addressMap') { //此处判断是如果返回上一层，你可以根据自己的业务更改此处的判断逻辑，酌情决定是否摧毁本层缓存。
+                if(this.$vnode && this.$vnode.data.keepAlive) {
+                    if(this.$vnode.parent && this.$vnode.parent.componentInstance && this.$vnode.parent.componentInstance.cache) {
+                        if(this.$vnode.componentOptions) {
+                            let key = this.$vnode.key == null ?
+                                this.$vnode.componentOptions.Ctor.cid + (this.$vnode.componentOptions.tag ? `::${this.$vnode.componentOptions.tag}` : '') :
+                                this.$vnode.key
+                            let cache = this.$vnode.parent.componentInstance.cache
+                            let keys = this.$vnode.parent.componentInstance.keys
+                            if(cache[key]) {
+                                if(keys.length) {
+                                    let index = keys.indexOf(key)
+                                    if(index > -1) {
+                                        keys.splice(index, 1);
+                                    }
+                                }
+                                delete cache[key]
+                            }
+                        }
+                    }
+                }
+                this.$destroy()
+            }
+            next()
         },
         created() {
 
         },
         methods: {
             initForm() {
-                console.log("进去判断",this.$route.params)
+                console.log("进去判断", this.userAddress)
                 if(this.$route.params.id) {
                     for(let key of this.userAddress) {
                         if(key.adr_id == this.$route.params.id) {
@@ -94,7 +125,9 @@
                                 caller: key.adr_caller,
                                 phone: key.adr_tell,
                                 location: key.adr_location,
-                                msg: key.adr_info
+                                msg: key.adr_info,
+                                lat:key.adr_lat,
+                                lng:key.adr_lng
                             }
                             break
                         }
@@ -121,6 +154,7 @@
                 }
             },
             selectAdr() {
+                console.log(this.adrSelect)
                 if(this.adrSelect.adr !== "") {
                     this.edit.location = this.adrSelect.location
                     this.edit.lat = /^\d{0,3}(\.\d{1,})?$/.test(this.adrSelect.point.lat) && (parseFloat(this.adrSelect.point.lat) >= -90 && parseFloat(this.adrSelect.point.lat) <= 90) ? this.adrSelect.point.lat : ''
@@ -128,8 +162,10 @@
                 }
             },
             saveAdr() {
+                console.log("",this.$route.name)
                 if(!this.canPost) return
                 let data = {
+                    id:this.$route.params.id || '',
                     tell: this.edit.phone,
                     info: this.edit.msg,
                     lat: this.edit.lat,
@@ -138,7 +174,9 @@
                     consignee: this.edit.name,
                     caller: /^[0|1]{1}$/.test(this.edit.caller) ? this.edit.caller : 2
                 }
-                this.$ajax.post(api.addAddress(), data).then(res => {
+                console.log(data)
+                this.$ajax.post((this.$route.name === 'addressAdd' ? api.addAddress : api.modifyAddress)(), data).then(res => {
+                    console.log(res)
                     if(res.code === 200) {
                         let _d = {
                             adr_caller: data.caller,
@@ -151,7 +189,7 @@
                             adr_location: data.address,
                             adr_tell: data.tell
                         }
-                        this.$store.commit("address/pushAddress", _d)
+                        this.$store.commit(this.$route.name === "addressAdd" ? "address/pushAddress" : "address/updateAddress", _d)
                         this.backTo()
                     } else {
                         console.log("添加收货地址失败!")
@@ -161,8 +199,8 @@
                 })
             },
             backTo() {
-//              this.$router.replace("/address")
-                window.history.go(-1)
+                this.$router.replace(this.History)
+                //              window.history.go(-1)
             },
             toMap() {
                 this.$router.push({

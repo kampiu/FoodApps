@@ -2,12 +2,12 @@
     <div class="seller-cart-view" :style="{display: show ? 'block' : 'none'}">
         <div class="seller-put-mask" @click="closeView"></div>
         <div :class="show ? 'putShow seller-cart-content' : 'seller-cart-content'">
-            <div class="seller-cart-content-header">收货地址选择</div>
+            <div class="seller-cart-content-header">收货地址选择 <span @click="setAdr">完成</span></div>
             <div class="adr-selput-scroll-view">
                 <vue-put-to class="adr-selput-scroll">
                     <label class="adr-selput-item" v-for="(item, index) in data" :key="item.adr_id + 'adrput'">
                         <div class="adr-selput-checkbox">
-                            <input name="addressId" type="radio" />
+                            <input :checked="index === 0" name="addressId" class="address-put-item-select" type="radio" :data-id="item.adr_id" />
                         </div>
                         <div class="adr-selput-context">
                             <div class="adr-selput-location font-break">{{item.adr_location}} {{item.adr_info}}</div>
@@ -46,6 +46,16 @@
         methods: {
             closeView(){
                 this.$emit("toSelectAdr")
+            },
+            setAdr(e){
+                console.log("safdsdf")
+                let p = document.getElementsByClassName("address-put-item-select")
+                for(let i = 0,len = p.length;i < len;i++){
+                    if(p[i].checked){
+                        this.$emit("selectAddress",{index:i,id:p[i].dataset.id})
+                        break
+                    }
+                }
             }
         },
         filters: {
@@ -55,6 +65,11 @@
 </script>
 
 <style>
+    .seller-cart-content-header span{
+        float:right;
+        color:#0387FF;
+        padding:0 6px 0 20px;
+    }
     .seller-cart-view {
         width: 100vw;
         height: 100vh;

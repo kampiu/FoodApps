@@ -37,7 +37,7 @@
         },
         beforeRouteEnter: (to, from, next) => {
             next(vm => {
-
+                
             })
         },
         created() {

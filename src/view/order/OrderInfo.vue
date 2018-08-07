@@ -2,14 +2,15 @@
     <div class="orderinfo-view">
         <div class="map-view" id="container"></div>
         <div class="seller-back orderinfo-back" @click="backTo"></div>
+        <vue-put-to class="orderinfo-scroll-view" :bottom-load-method="loadmore" :bottom-config="scrollConfigBottom" :top-load-method="refresh" :top-config="scrollConfigTop">
         <div class="orderinfo-context">
             <div class="orderinfo-sellerbox">
-                <div class="orderinfo-seller-icon" :style="{backgroundImage: 'url(' + sellerInfo.icon + ')'}"></div>
+                <router-link :to="'/seller/' + sellerInfo.id + '/home'"><div class="orderinfo-seller-icon" :style="{backgroundImage: 'url(' + sellerInfo.icon + ')'}"></div></router-link>
                 <div class="orderinfo-seller-msg">
                     <div class="orderinfo-seller-name">{{sellerInfo.sellerName}}
-                        <span>{{orderInfo.type == 1 ? '商家已接单' : orderInfo.type == 2 ? '订单完成' : '订单已退款'}}</span>
+                        <span>{{orderInfo.orderState == 1 ? '商家已接单' : orderInfo.orderState == 2 ? '订单完成' : '订单已退款'}}</span>
                     </div>
-                    <div class="orderinfo-seller-tell">商家电话: {{sellerInfo.tell}}</div>
+                    <div class="orderinfo-seller-tell">商家电话: {{sellerInfo.tell | tellForm}}</div>
                     <div class="orderinfo-seller-ordertime">配送时间大约为: <span>{{sellerInfo.leadTime}}</span>分钟</div>
                 </div>
             </div>
@@ -18,17 +19,17 @@
                 <div class="orderinfo-setting-btn" @click="finishOrder">已送达</div>
             </div>
             <div class="orderinfo-orderbox">
-                <div class="order-item-by-list" v-for="(item, index) in orderData" :key="'oiByL' + item.pro_id + orderInfo.orderId + item.pro_select">
+                <div class="order-item-by-list" v-for="(item, index) in orderData" :key="'oiByL' + item.id + orderInfo.orderCode + item.attr">
                     <div class="order-item-by-list-img">
-                        <div :style="{backgroundImage:'url(' + item.pro_icon + ')'}"></div>
+                        <div :style="{backgroundImage:'url(' + item.icon + ')'}"></div>
                     </div>
                     <div class="order-item-by-list-context">
-                        <div class="font-break" style="display:flex;justify-content: space-between;">{{item.pro_name}}<span>￥{{item.pro_price}}</span></div>
+                        <div class="font-break" style="display:flex;justify-content: space-between;">{{item.name}}<span>￥{{item.price}}</span></div>
                         <div>
                             <div class="order-item-by-list-attr">
-                                <span v-for="(_item, _index) in item.pro_select" :key="'oiByI' + item.pro_id + orderInfo.orderId + _item">{{_item}}</span>
+                                <span v-for="(_item, _index) in item.attr" :key="'oiByI' + item.id + orderInfo.orderCode + _item">{{_item}}</span>
                             </div>
-                            <span style="color:#333">x{{item.pro_num}}</span>
+                            <span style="color:#333">x{{item.num}}</span>
                         </div>
                     </div>
                 </div>
@@ -36,23 +37,34 @@
             <div class="orderinfo-box-info">
                 <div class="orderinfo-box-info-title">配送信息</div>
                 <div class="orderinfo-box-info-item">配送费:<span>￥{{sellerInfo.distribution}}</span></div>
-                <div class="orderinfo-box-info-item">总费用:<span>￥{{orderInfo.price}}</span></div>
+                <div class="orderinfo-box-info-item">总费用:<span>￥{{orderInfo.orderPrice}}</span></div>
                 <div class="orderinfo-box-info-item">配送服务:<span>神秘快送</span></div>
-                <div class="orderinfo-box-info-item">商家地址:<span>{{sellerInfo.address}}</span></div>
+                <div class="orderinfo-box-info-item">顾客姓名:<span>{{addressInfo.adr_consignee}} {{addressInfo.adr_caller == 0 ? ' 小姐' : ' 先森'}}</span></div>
+                <div class="orderinfo-box-info-item">联系电话:<span>{{addressInfo.adr_tell | tellForm}}</span></div>
+                <div class="orderinfo-box-info-item">配送地址:<span>{{addressInfo.adr_location}}{{addressInfo.adr_info}}</span></div>
             </div>
             <div class="orderinfo-box-info">
                 <div class="orderinfo-box-info-title">订单信息</div>
-                <div class="orderinfo-box-info-item">订单号码:<span>{{orderInfo.orderId}}</span></div>
-                <div class="orderinfo-box-info-item">下单时间:<span>{{orderInfo.time | timeForm}}</span></div>
+                <div class="orderinfo-box-info-item">订单号码:<span>{{orderInfo.orderCode}}</span></div>
+                <div class="orderinfo-box-info-item">下单时间:<span>{{orderInfo.orderAddtime | timeForm}}</span></div>
                 <div class="orderinfo-box-info-item">支付方式:<span>在线支付</span></div>
             </div>
         </div>
+        </vue-put-to>
     </div>
 </template>
 <style>
-
+    .orderinfo-scroll-view{
+        position:fixed;
+        left:0;
+        top:30vh;
+        z-index: 8000;
+        width:100%;
+        height:70vh !important;
+    }
 </style>
 <script>
+    import vuePutTo from 'vue-pull-to'
     import api from '@/common/api'
     import {
         mapMutations,
@@ -62,39 +74,76 @@
     export default {
         data() {
             return {
-                Map: null,
-                point: {
-                    latitude: 23.0528591239614,
-                    longitude: 113.372155550906
+                scrollConfigBottom: {
+                    pullText: '',
+                    triggerText: '',
+                    loadingText: '',
+                    doneText: '加载完成',
+                    failText: '加载失败',
+                    loadedStayTime: 400,
+                    stayDistance: 50,
+                    triggerDistance: 50
                 },
-                sellerInfo: {},
+                scrollConfigTop: {
+                    pullText: '',
+                    triggerText: '',
+                    loadingText: '',
+                    doneText: '加载完成',
+                    failText: '加载失败',
+                    loadedStayTime: 400,
+                    stayDistance: 50,
+                    triggerDistance: 50
+                },
+                Map: null,
+                sellerInfo: {
+                    tell:""
+                },
                 orderData: [],
-                orderInfo: {}
+                orderInfo: {},
+                addressInfo:{
+                    adr_tell:""
+                }
             }
         },
         components: {
-
+            vuePutTo
         },
         beforeRouteEnter: (to, from, next) => {
             next(vm => {
-                for(let item of vm.orderList) {
-                    if(item.orderId == to.params.id) {
-                        vm.orderInfo = item
-                        vm.sellerInfo = item.sellerInfo
-                        vm.orderData = item.order
-                        break
-                    }
-                }
-                vm.initMap()
+                vm.initData()
             })
         },
         mounted() {
-            window.addEventListener('scroll', this.havingScroll)
+            
         },
         created() {
 
         },
         methods: {
+            loadmore(){
+                
+            },
+            refresh(){
+                
+            },
+            initData() {
+                for(let item of this.orderList) {
+                    if(item.orderCode == this.$route.params.id) {
+                        let {
+                            seller,
+                            order,
+                            address,
+                            ...orderInfo
+                        } = item
+                        this.orderInfo = orderInfo
+                        this.sellerInfo = seller
+                        this.orderData = order
+                        this.addressInfo = address
+                        this.initMap()
+                        return
+                    }
+                }
+            },
             initMap() {
                 this.Map = new BMap.Map("container")
                 let point = new BMap.Point(this.sellerInfo.longitude, this.sellerInfo.latitude)
@@ -108,24 +157,16 @@
                     path: 'home'
                 })
             },
-            havingScroll() {
-                let scrT = document.body.scrollTop || document.documentElement.scrollTop
-                if(this.router == "orderInfo") {
-                    document.getElementsByClassName("orderinfo-context")[0].style.background = "rgba(244,244,244," + 0.0028 * scrT + ")"
-                }
-            },
             finishOrder(e) {
                 this.$store.commit("order/finishOrder", this.orderInfo.orderId)
                 this.$router.push({
-//                  path: '/order/complete'
-                    name:'orderComplete'
+                    name: 'orderComplete'
                 })
             },
             refundOrder(e) {
                 this.$store.commit("order/refundOrder", this.orderInfo.orderId)
                 this.$router.push({
-//                  path: '/order/refund'
-                    name:'orderRefund'
+                    name: 'orderRefund'
                 })
             }
         },
@@ -145,7 +186,34 @@
                 let mm = time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes()
                 let s = time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds()
                 return y + '-' + m + '-' + d + ' ' + h + ':' + mm + ':' + s
+            },
+            tellForm(val){
+                let arr = val.split(" "),tell = ""
+                switch(arr[0].length) {
+                    case 8:
+                        tell = arr[0].replace(/(\d{3})\d{2}(\d{3})/, '$1****$2')
+                        break
+                    case 10:
+                        tell = arr[0].replace(/(\d{3})\d{4}(\d{3})/, '$1****$2')
+                        break
+                    case 11:
+                        tell = arr[0].replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
+                        break
+                    case 12:
+                        tell = arr[0].replace(/(\d{3})\d{5}(\d{4})/, '$1****$2')
+                        break
+                    case 13:
+                        tell = arr[0].replace(/(\d{5})\d{4}(\d{4})/, '$1****$2')
+                        break
+                    default:
+                        tell = arr[0].replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
+                        break
+                }
+                return tell
             }
+        },
+        beforeDestroy() {
+
         }
     }
 
@@ -174,4 +242,5 @@
     }
 </script>
 <style>
+
 </style>

@@ -11,6 +11,7 @@ import 'vue-croppa/dist/vue-croppa.css'
 import Croppa from 'vue-croppa'
 //import registerServiceWorker from '@/common/registerServiceWorker'
 
+
 (function(d, w) {
 	let dw = d.documentElement.clientWidth;
 	d.documentElement.style.fontSize = dw / 7.5 + "px"
@@ -41,8 +42,9 @@ const app = new Vue({
 	methods: {
 		initApp() {
 			this.$store.commit("cart/initOrder")
-			this.$store.commit("order/initOrder")
+//			this.$store.commit("order/initOrder")
 			this.$store.dispatch("user/initToken")
+			this.$store.dispatch("order/getOrderForServer")
 		}
 	},
 	watch: {
@@ -60,8 +62,8 @@ window.addEventListener("storage", (e) => {
 	}
 })
 
-//window.postMessage = () => {
-//
-//}
+window.postMessage = () => {
+
+}
 
 //registerServiceWorker()

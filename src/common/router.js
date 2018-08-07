@@ -161,7 +161,7 @@ const router = new Router({
 		},
 		{
 			name: 'orderConfirm',
-			path: '/orderConfirm',
+			path: '/orderConfirm/:id',
 			component: OrderConfirm,
 			meta: {
 				title: "订单确认",
@@ -180,23 +180,25 @@ const router = new Router({
 			}
 		},
 		{
-			name: 'addressEdit',
-			path: '/address/add',
-			component: addressEdit,
-			meta: {
-				title: "修改收货地址",
-				description: "用户的收货地址，修改收货地址",
-				requireAuth: true
-			}
-		},
-		{
 			name: 'addressAdd',
-			path: '/address/edit/:id',
+			path: '/address/add',
 			component: addressEdit,
 			meta: {
 				title: "添加收货地址",
 				description: "用户的收货地址，添加收货地址",
-				requireAuth: true
+				requireAuth: true,
+				keeyAlive:false
+			}
+		},
+		{
+			name: 'addressEdit',
+			path: '/address/edit/:id',
+			component: addressEdit,
+			meta: {
+				title: "修改收货地址",
+				description: "用户的收货地址，修改收货地址",
+				requireAuth: true,
+				keeyAlive:false
 			}
 		},
 		{

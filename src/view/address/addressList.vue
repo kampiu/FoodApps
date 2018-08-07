@@ -7,7 +7,7 @@
                 <div class="address-add" @click="toAdd">新增地址</div>
             </div>
             <vue-put-to class="address-view-scroll" :top-load-method="refresh" :top-config="scrollConfigTop">
-                <div class="address-item" v-for="(item, index) in userAddress" :key="item.adr_id + 'adr-item'">
+                <div class="address-item" v-for="(item, index) in addressList" :key="item.adr_id + 'adr-item'">
                     <div class="address-location font-break">{{item.adr_location}} {{item.adr_info}}</div>
                     <div class="address-consignee font-break">
                         <div>{{item.adr_consignee}}<span>{{item.adr_caller | call}}</span></div>
@@ -43,7 +43,9 @@
                     loadedStayTime: 400,
                     stayDistance: 50,
                     triggerDistance: 50
-                }
+                },
+                addressList:[],
+                History:""
             }
         },
         components: {
@@ -51,6 +53,9 @@
         },
         beforeRouteEnter: (to, from, next) => {
             next(vm => {
+                if(from.name !== 'addressEdit' && from.name !== 'addressAdd'){
+                    vm.History = from.path
+                }
                 if(vm.userAddress.length === 0) {
                     vm.getAddress()
                 }
@@ -62,6 +67,7 @@
         methods: {
             getAddress(callback) {
                 this.$ajax.get(api.getAddress()).then(res => {
+                    this.addressList = res.data
                     res.code === 200 && this.$store.commit("address/initAdrList", res.data)
                     callback && callback()
                 }).catch(err => {
@@ -74,7 +80,7 @@
                 })
             },
             backTo() {
-                window.history.go(-1)
+                this.$router.replace(this.History)
             },
             toAdd() {
                 this.$router.push({
@@ -86,6 +92,10 @@
             ...mapGetters([
                 'userAddress'
             ])
+        },
+        activated(){
+            console.log(this.userAddress)
+            this.addressList = this.userAddress
         },
         filters: {
             call(caller) {

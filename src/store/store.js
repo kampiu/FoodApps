@@ -60,19 +60,30 @@ const Store = new Vuex.Store({
 		addOrder(state, data){					//添加下单的单号
 			let orderList = localStorage.getItem("eleme_orderList") ? JSON.parse(localStorage.getItem("eleme_orderList")) : []				//获取订单列表
 			let order = data
-			order.time = new Date().getTime()													//orderID为下标 + 时间戳补零
-			order.type = 1
-			order.orderId = orderList.length > 10 ? orderList.length + "" + new Date().getTime() : "0" + orderList.length + new Date().getTime()
+			order.order.forEach((item, index) => {
+				order.order[index] = {
+					id: item.pro_id,
+					name: item.pro_name,
+					describe: item.pro_describe,
+					price: item.pro_price,   
+					num: item.pro_num,
+					attr: item.pro_select,
+					icon: item.pro_icon,
+					param: item.pro_param
+				}
+			})
+
 			let cartlist = JSON.parse(localStorage.getItem("eleme_cartList"))				//初始化购物车并更新保存
-			cartlist[data.sellerInfo.id] = []
+			cartlist[data.seller.id] = []
 			localStorage.setItem("eleme_cartList", JSON.stringify(cartlist))
 			state.cart.cartList = cartlist
+			
 			orderList.unshift(order)
 			localStorage.setItem("eleme_orderList", JSON.stringify(orderList))
 			state.order.orderList = orderList
 			//初始化购物车的价格与购物车数量
-			state.cart.cartCount[data.sellerInfo.id] = 0
-			state.cart.cartPay[data.sellerInfo.id] = 0
+			state.cart.cartCount[data.seller.id] = 0
+			state.cart.cartPay[data.seller.id] = 0
 		}
 	},
 	modules: {
@@ -83,5 +94,8 @@ const Store = new Vuex.Store({
 		user: userStore,
 	}
 })
+
+
+
 
 export default Store
