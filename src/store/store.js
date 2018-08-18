@@ -27,7 +27,8 @@ const Store = new Vuex.Store({
 		acount: state => state.user.acount,
 		userAddress: state => state.address.userAddress,
 		adrSelect: state => state.address.adrSelect,
-		createOrder: state => state.order.createOrder
+		createOrder: state => state.order.createOrder,
+		city: state => state.common.city
 	},
 	mutations: {
 		initSellerInfo(state, data) {

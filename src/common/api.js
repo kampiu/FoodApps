@@ -42,6 +42,9 @@ export default {
 	getUserInfo(){
 		return _baseUrl + "user/getinfo"
 	},
+	modifyInfo(){
+		return _baseUrl + "user/modify/info"
+	},
 	addAddress(){
 		return _baseUrl + "user/addAddress"
 	},

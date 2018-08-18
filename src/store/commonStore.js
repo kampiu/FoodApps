@@ -3,7 +3,8 @@ const commonStore = {
 	state: {
 		router: "home",
 		sellerInfo: {},
-		sellerList: []
+		sellerList: [],
+		city:"东莞"
 	},
 	getters: {
 
@@ -15,6 +16,9 @@ const commonStore = {
 		initSeller(state){
 			state.sellerList = []
 			state.sellerInfo = {}
+		},
+		initCity(state, city){
+			state.city = city
 		}
 	},
 	actions: {

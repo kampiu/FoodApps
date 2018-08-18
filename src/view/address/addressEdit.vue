@@ -49,6 +49,7 @@
 <script>
     import vuePutTo from 'vue-pull-to'
     import api from '@/common/api'
+    import { Toast } from 'vant'
     import {
         mapMutations,
         mapGetters
@@ -68,7 +69,7 @@
                 },
                 History: "",
                 canPost: false,
-                templateName:""
+                templateName: ""
             }
         },
         components: {
@@ -86,7 +87,7 @@
             })
         },
         beforeRouteLeave: function(to, from, next) {
-            if(to.name !== 'addressMap') { //此处判断是如果返回上一层，你可以根据自己的业务更改此处的判断逻辑，酌情决定是否摧毁本层缓存。
+            if(to.name !== 'addressMap') { //此处判断是如果返回上一层，摧毁本层缓存。
                 if(this.$vnode && this.$vnode.data.keepAlive) {
                     if(this.$vnode.parent && this.$vnode.parent.componentInstance && this.$vnode.parent.componentInstance.cache) {
                         if(this.$vnode.componentOptions) {
@@ -116,7 +117,6 @@
         },
         methods: {
             initForm() {
-                console.log("进去判断", this.userAddress)
                 if(this.$route.params.id) {
                     for(let key of this.userAddress) {
                         if(key.adr_id == this.$route.params.id) {
@@ -126,8 +126,8 @@
                                 phone: key.adr_tell,
                                 location: key.adr_location,
                                 msg: key.adr_info,
-                                lat:key.adr_lat,
-                                lng:key.adr_lng
+                                lat: key.adr_lat,
+                                lng: key.adr_lng
                             }
                             break
                         }
@@ -154,7 +154,6 @@
                 }
             },
             selectAdr() {
-                console.log(this.adrSelect)
                 if(this.adrSelect.adr !== "") {
                     this.edit.location = this.adrSelect.location
                     this.edit.lat = /^\d{0,3}(\.\d{1,})?$/.test(this.adrSelect.point.lat) && (parseFloat(this.adrSelect.point.lat) >= -90 && parseFloat(this.adrSelect.point.lat) <= 90) ? this.adrSelect.point.lat : ''
@@ -162,10 +161,9 @@
                 }
             },
             saveAdr() {
-                console.log("",this.$route.name)
                 if(!this.canPost) return
                 let data = {
-                    id:this.$route.params.id || '',
+                    id: this.$route.params.id || '',
                     tell: this.edit.phone,
                     info: this.edit.msg,
                     lat: this.edit.lat,
@@ -174,10 +172,12 @@
                     consignee: this.edit.name,
                     caller: /^[0|1]{1}$/.test(this.edit.caller) ? this.edit.caller : 2
                 }
-                console.log(data)
                 this.$ajax.post((this.$route.name === 'addressAdd' ? api.addAddress : api.modifyAddress)(), data).then(res => {
-                    console.log(res)
                     if(res.code === 200) {
+                        Toast({
+                            message: (this.$route.name === 'addressAdd' ? '添加成功!' : '修改成功'),
+                            duration: 1000
+                        })
                         let _d = {
                             adr_caller: data.caller,
                             adr_consignee: data.consignee,
@@ -192,15 +192,20 @@
                         this.$store.commit(this.$route.name === "addressAdd" ? "address/pushAddress" : "address/updateAddress", _d)
                         this.backTo()
                     } else {
-                        console.log("添加收货地址失败!")
+                        Toast({
+                            message: (this.$route.name === 'addressAdd' ? '添加失败!' : '修改失败'),
+                            duration: 1000
+                        })
                     }
                 }).catch(err => {
-                    console.log(err, "添加收货地址失败!")
+                    Toast({
+                        message: (this.$route.name === 'addressAdd' ? '添加失败!' : '修改失败'),
+                        duration: 1000
+                    })
                 })
             },
             backTo() {
                 this.$router.replace(this.History)
-                //              window.history.go(-1)
             },
             toMap() {
                 this.$router.push({

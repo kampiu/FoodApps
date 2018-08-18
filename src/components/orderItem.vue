@@ -25,6 +25,7 @@
 
 <script>
     import api from '@/common/api'
+    import { Toast } from 'vant'
     
     export default {
         props:["item"],
@@ -43,15 +44,17 @@
             finishOrder(e) {
                 this.$ajax.post(api.updateOrder(),{id:e.target.dataset.id,state:2}).then(res => {
                     res.code === 200 && this.$store.commit("order/finishOrder", e.target.dataset.id)
+                    res.code === 200 && Toast({message: '订单完成', duration: 1000})
                 }).catch(err => {
-                    console.log("更该订单状态失败!",err)
+                    Toast({message: '更该订单状态失败!', duration: 1000})
                 })
             },
             refundOrder(e) {
                 this.$ajax.post(api.updateOrder(),{id:e.target.dataset.id,state:3}).then(res => {
                     res.code === 200 && this.$store.commit("order/refundOrder", e.target.dataset.id)
+                    res.code === 200 && Toast({message: '订单退款', duration: 1000})
                 }).catch(err => {
-                    console.log("更该订单状态失败!",err)
+                    Toast({message: '更该订单状态失败!', duration: 1000})
                 })
             }
         },

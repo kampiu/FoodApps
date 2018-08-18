@@ -63,6 +63,8 @@ ul>li {
 	line-height: 50px;
 	text-align: center;
 	background: -webkit-linear-gradient(left, #03AAFF, #0387FF);
+	position:relative;
+	z-index: 200;
 }
 
 .seller-back {

@@ -12,6 +12,7 @@
     import orderItem from '@/components/orderItem'
     import vuePutTo from 'vue-pull-to'
     import api from '@/common/api'
+    import { Toast } from 'vant'
     import {
         mapMutations,
         mapGetters
@@ -68,11 +69,12 @@
                     page: this.page,
                     limit: this.limit
                 }).then(res => {
+                    res.code === 200 && Toast({message: '获取成功!', duration: 1000})
                     res.code === 200 && this.$store.commit("order/addOrder",res.result)
                     res.code !== 200 && this.page--
                     callback && callback()
                 }).catch(err => {
-                    console.log(err)
+                    Toast({message: '获取失败!', duration: 1000})
                 })
             },
             initSearch(callback) {
@@ -81,10 +83,11 @@
                     page: this.page,
                     limit: this.limit
                 }).then(res => {
+                    res.code === 200 && Toast({message: '初始化成功!', duration: 1000})
                     res.code === 200 && this.$store.commit("order/initOrder",res.result)
                     callback && callback()
                 }).catch(err => {
-                    console.log(err)
+                    Toast({message: '初始化失败!', duration: 1000})
                 })
             },
             finishOrder(e) {
@@ -156,7 +159,7 @@
         text-align: center;
         background: -webkit-linear-gradient(left, #03AAFF, #0387FF);
         position: relative;
-        z-index: 200;
+        z-index: 2000;
     }
     
     .order-nav {

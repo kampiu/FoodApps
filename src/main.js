@@ -5,7 +5,6 @@ import VueResource from 'vue-resource'
 import store from '@/store/store'
 import Http from '@/common/http'
 import PullTo from 'vue-pull-to'
-import 'swiper/dist/css/swiper.min.css'
 import '@/common/common.css'
 import 'vue-croppa/dist/vue-croppa.css'
 import Croppa from 'vue-croppa'
@@ -41,9 +40,9 @@ const app = new Vue({
 	},
 	methods: {
 		initApp() {
-			this.$store.commit("cart/initOrder")
-//			this.$store.commit("order/initOrder")
+			console.log("初始化ELEME！")
 			this.$store.dispatch("user/initToken")
+			this.$store.commit("cart/initOrder")
 			this.$store.dispatch("order/getOrderForServer")
 		}
 	},

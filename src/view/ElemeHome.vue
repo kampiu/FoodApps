@@ -4,19 +4,18 @@
         <vue-put-to :bottom-load-method="loadmore" :bottom-config="scrollConfigBottom" :top-load-method="refresh" :top-config="scrollConfigTop">
             <div class="home-header">
                 <div class="location-bar" @click="toCity">
-                    东莞市
+                    {{city}}
                 </div>
             </div>
             <div class="swiper-menu">
-                <swiper :options="swiperOption">
-                    <swiper-slide v-for="(item, index) in menuList" :key="index + 'menu-item'" class="menu-item">
+                <Swipe>
+                    <SwipeItem v-for="(item, index) in menuList" :key="index + 'menu-item'" class="menu-item">
                         <div class="menu-nav" v-for="(_item, _index) in item" :key="_item.cate_id + 'menu-nav'" :data-id="_item.cate_eleme_id" @click="changStyle">
                             <img :src="_item.cate_icon" :data-id="_item.cate_eleme_id" alt="" />
                             <span :data-id="_item.cate_eleme_id">{{_item.cate_name}}</span>
                         </div>
-                    </swiper-slide>
-                    <div class="swiper-pagination" slot="pagination"></div>
-                </swiper>
+                    </SwipeItem>
+                </Swipe>
             </div>
             <div class="seller-list">
                 <div class="seller-list-header">
@@ -42,17 +41,21 @@
     </div>
 </template>
 <style>
+
 </style>
 
 <script>
     import sellerItem from '@/components/sellerItem'
     import searchBar from '@/components/searchBar'
     import vuePutTo from 'vue-pull-to'
+    import { Toast } from 'vant'
     import api from '@/common/api'
+    import { Swipe, SwipeItem } from 'vant'
+    import 'vant/lib/vant-css/base.css'
     import {
-        swiper,
-        swiperSlide
-    } from 'vue-awesome-swiper'
+        mapMutations,
+        mapGetters
+    } from 'vuex'
 
     export default {
         data() {
@@ -77,19 +80,6 @@
                     stayDistance: 50,
                     triggerDistance: 50
                 },
-                swiperOption: {
-                    pagination: {
-                        el: '.swiper-pagination',
-                        clickable: true
-                    },
-                    paginationClickable: true,
-                    continuous: true,
-                    slidesPerView: 1,
-                    spaceBetween: 30,
-                    speed: 200,
-                    loop: true,
-                    loopFillGroupWithBlank: true,
-                },
                 menuList: [],
                 type: "",
                 page: 1,
@@ -98,11 +88,22 @@
             }
         },
         components: {
-            swiperSlide,
             sellerItem,
             searchBar,
             vuePutTo,
-            swiper
+            Swipe,
+            SwipeItem
+        },
+        beforeRouteEnter: (to, from, next) => {
+            next(vm => {
+                if(to.meta.scroll > 0){
+                    document.getElementsByClassName("scroll-container")[0].scrollTop = to.meta.scroll
+                }
+            })
+        },
+        beforeRouteLeave: function(to, from, next){
+            this.$route.meta.scroll = document.getElementsByClassName("scroll-container")[0].scrollTop
+            next()
         },
         created() {
             this.get()
@@ -117,14 +118,28 @@
             },
             getSeller(callback) {
                 this.$ajax.get(api.getSellerList(this.page, this.limit, this.type)).then(res => {
-                    res.result.data.forEach((item, index) => {
-                        this.sellerList.push(item)
-                    })
-                    this.scrollConfigTop.doneText = callback ? "加载完成，共加载" + res.result.data.length +"条数据" : "加载完成"
-                    this.scrollConfigBottom.doneText = callback ? "加载完成，共加载" + res.result.data.length +"条数据" : "加载完成"
+                    if(res.code === 200) {
+                        Toast({
+                            message: '获取商家列表成功!',
+                            duration: 1000
+                        })
+                        res.result.data.forEach((item, index) => {
+                            this.sellerList.push(item)
+                        })
+                        this.scrollConfigTop.doneText = callback ? "加载完成，共加载" + res.result.data.length + "条数据" : "加载完成"
+                        this.scrollConfigBottom.doneText = callback ? "加载完成，共加载" + res.result.data.length + "条数据" : "加载完成"
+                    } else {
+                        Toast({
+                            message: '获取商家列表失败!',
+                            duration: 1000
+                        })
+                    }
                     callback && callback()
                 }).catch(err => {
-                    console.log("获取数据失败:" + err)
+                    Toast({
+                        message: '获取数据失败!',
+                        duration: 1000
+                    })
                 })
             },
             refresh(loaded) {
@@ -143,30 +158,44 @@
             },
             get() {
                 this.$ajax.get(api.getMenu()).then(res => {
-                    let _len = 10,
-                        _min = 0,
-                        arr = [
-                            []
-                        ]
-                    res.result.data.forEach((item, index) => {
-                        if(index < (_min + 1) * _len) {
-                            arr[_min].push(item)
-                        } else {
-                            _min++
-                            arr.push([])
-                            arr[_min].push(item)
-                        }
-                    })
-                    this.menuList = arr
+                    if(res.code === 200) {
+                        Toast({
+                            message: '获取菜单成功!',
+                            duration: 1000
+                        })
+                        let _len = 10,
+                            _min = 0,
+                            arr = [
+                                []
+                            ]
+                        res.result.data.forEach((item, index) => {
+                            if(index < (_min + 1) * _len) {
+                                arr[_min].push(item)
+                            } else {
+                                _min++
+                                arr.push([])
+                                arr[_min].push(item)
+                            }
+                        })
+                        this.menuList = arr
+                    }
                 }).catch(err => {
-                    console.log(err)
+                    Toast({
+                        message: '获取菜单失败!',
+                        duration: 1000
+                    })
                 })
             },
-            toCity(){
+            toCity() {
                 this.$router.push({
                     path: '/city'
                 })
             }
+        },
+        computed: {
+            ...mapGetters([
+                'city'
+            ])
         },
         filters: {
 
@@ -184,7 +213,9 @@
         background-position: center bottom;
         margin-bottom: 0.2rem;
     }
-    
+    .van-swipe__indicator--active{
+        background-color: #0387FF;
+    }
     .location-bar {
         width: 100%;
         height: 0.5rem;
@@ -195,7 +226,9 @@
     }
     
     .swiper-menu,
-    .swiper-container {
+    .swiper-container,
+    .swiper-menu Swipe,
+    .van-swipe {
         width: 100%;
         height: 45vw;
     }
@@ -231,6 +264,7 @@
         width: 100%;
         overflow: hidden;
     }
+    
     .seller-list-header {
         width: 100%;
         height: 55px;
@@ -242,17 +276,17 @@
         width: 100%;
         height: 16px;
         text-align: center;
-        position:relative;
+        position: relative;
     }
     
     .seller-list-title::before,
     .seller-list-title::after {
         content: "";
         position: absolute;
-        width:3.4vw;
+        width: 3.4vw;
         height: 1px;
         background: #333;
-        top:8px;
+        top: 8px;
     }
     
     .seller-list-title::before {
@@ -273,8 +307,5 @@
     
     .home-view {
         padding-top: 44px;
-    }
-    .home-view .swiper-container-horizontal>.swiper-pagination-bullets, .swiper-pagination-custom, .swiper-pagination-fraction{
-        bottom:6px;
     }
 </style>

@@ -13,7 +13,7 @@
             <div :class="isFocus ? 'search-cancel search-cancel-active' : 'search-cancel'" @click="cancelBybtn">取消</div>
         </div>
         <div :class="isFocus ? 'search-bar-nav search-bar-hide' : 'search-bar-nav'">
-            <div class="location"></div>
+            <router-link to="/city" class="location"></router-link>
         </div>
         <div :class="isFocus ? 'search-list search-list-active' : 'search-list'">
             <div class="search-tip">
@@ -29,6 +29,7 @@
 <script>
     import sellerItem from '@/components/sellerItem'
     import api from '@/common/api'
+    import { Toast } from 'vant'
 
     export default {
         data() {
@@ -76,16 +77,29 @@
                 document.getElementById("search").value = ""
             },
             write(e) {
-                this.word = e.target.value
-                this.getResult()
+                this.word = (e.target.value).replace(" ", "")
+                if(this.word !== "") {
+                    this.getResult()
+                } else {
+                    this.result = []
+                }
             },
             getResult() {
                 this.$ajax(api.search(this.word)).then(e => {
                     this.result = e.result.data
                 }).catch(err => {
-                    console.log(err)
+                    Toast({
+                        message: '搜索错误!',
+                        duration: 1000
+                    })
                 })
             }
+        },
+        activated() {
+            this.isFocus = false
+            this.isShowList = false
+            this.word = ""
+            this.result = []
         },
         filters: {
 
@@ -134,15 +148,16 @@
     }
     
     .search-slide-menu {
-        background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyBjbGFzcz0iaWNvbiIgd2lkdGg9IjIwMHB4IiBoZWlnaHQ9IjIwMC4wMHB4IiB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iI0Y4RjhGOCIgZD0iTTEwMTUuOTM2IDk4MC4wOTZsLTc2LjgtNzYuNzM2YzMwLjcyLTM4LjQgMzMuMjgtOTIuMDk2IDAtMTMwLjQzMkw2OTYuMjU2IDQ3My42YzEyLjgtMzUuODQgMjAuNDgtNzQuMTc2IDIwLjQ4LTExNS4wNzIgMC0xOTYuOTkyLTE2MS4yMTYtMzU4LjE0NC0zNTguMTQ0LTM1OC4xNDRDMTYxLjUzNiAwLjM4NCAwLjM4NCAxNjEuNTM2IDAuMzg0IDM1OC41MjhjMCAxOTYuOTI4IDE2MS4xNTIgMzU4LjE0NCAzNTguMTQ0IDM1OC4xNDQgNDAuOTYgMCA3OS4yOTYtNy42OCAxMTUuMDcyLTIwLjQ4bDI5OS4zMjggMjQzLjAwOGMxNy45MiAxNS4zNiA0MC45NiAyMy4wNCA2My45MzYgMjMuMDQgMjMuMDQgMCA0Ni4wOC03LjY4IDY2LjU2LTIzLjA0bDc2LjY3MiA3Ni43MzZjNS4xMiA1LjEyIDEyLjggNy42OCAxNy45MiA3LjY4IDUuMTIgMCAxMi44LTIuNTYgMTcuOTItNy42OCAxMC4yNC0xMC4yNCAxMC4yNC0yNS42IDAtMzUuODR6TTU3Ljk4NCAzNTcuMTJBMzAwLjAzMiAzMDAuMDMyIDAgMCAxIDM1Ny4xMiA1Ny45ODRjNzIuMzIgMCAxMzkuNTg0IDI3LjM5MiAxOTIgNjkuNzZMMTI3Ljc0NCA1NDkuMTJDODUuMzc2IDQ5Ni43MDQgNTcuOTg0IDQyOS40NCA1Ny45ODQgMzU3LjEyeiBtMzkyLjgzMiAyODMuMDcyYy0yOC44IDkuNi02MC4xNiA5Ljg1Ni04OC45NiA5Ljg1Ni02OS42MzIgMC0xMzEuODQtMTUuNTUyLTE4Mi4yNzItNTYuMzg0TDU5MC4wOCAxODcuMDA4YzQzLjIgNTAuNDMyIDU5LjkwNCAxMDUuMjE2IDU5LjkwNCAxNzQuODQ4IDAgMjguOC0zLjc3NiA2Mi45MTItMTMuMzc2IDkxLjcxMmwtMTg1Ljg1NiAxODYuNjI0eiBtNDM3LjgyNCAyMjYuMjRsLTIyLjE0NCAyMi4xNDRhNDguNTc2IDQ4LjU3NiAwIDAgMS0zNC40MzIgMTQuNzJjLTcuMzYgMC0xOS42NDgtMi40MzItMzItOS43OTJMNTE5LjY4IDY2Mi4yNzJsMTQ1LjE1Mi0xNDUuMDg4IDIyOC43MzYgMjgyLjg4YzE0LjcyIDIyLjA4IDE0LjcyIDQ5LjE1Mi00LjkyOCA2Ni4zNjh6IiAgLz48L3N2Zz4=');
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAE0AAABACAYAAABfl/puAAAEZElEQVR4Xu2cXaimUxTHf3/f+Zh8zAgpI4lJp2nExJCEjI/JBcWYSKgJSXHBTESGC8rnzTBRJi7QcOEr4yNRNDM3ZtJgCMMQKSVEvpf+x/PynuN5n/fZ2828z7vXxTmnztr7POt31n7etfdaa4s+iYjTgOuAk4A9gJ+B9cCDkp7s1x3nn2XjI2IXYCVweQOMF4Alkr4fZ2C2vQdtNXBJCxivAqdLimG6EXEgcBiw0zDd7fz3tvVzYGvPbkXEUcDmhAc/R9Jzg/Qj4gDgceDkhDlHQfUj4AJJbxvaPcC1CU+9RtL5DdDWAgsT5hsl1S+BQw3NXrMo4ck3Sjq6Tj8idgR+Afy9qzLb0N4ETkiwcJukQwZA89L8KmGuUVSdMLSngXMTnn6DpOMalufvHfe0gw3tRuD2BGiO2a5sgPYYcFHCfKOk+iFwpKE5NPgUcKzWRuZJ2tQAbX/gFsCBskOOLrzfHHKsA26TtLkXpy0FVrUgtkKSgYy1TEKzRMTF3i4Bu9cQ+RVYJunesaZVGf8PtArcLOB64Ng+OO8Cd0raVoD9TWAKtAKlHYECrR2nKVoFWoGWQSBjSPG0Ai2DQMaQ4mkFWgaBjCHF0wq0DAIZQ4qnFWgZBDKG/MfTImJf4FQnEIAvgNclOaFQZPopR0TsCtwKXF1l13uQfgMe8emHpO8KuX+TxT69fQVwDnSQ+PRyoaT3xx2cj7t3qI5y57eA8TEwV9KPTboRMdOZ+I4cdzvD7rNEv6a22m5Dc85zYMa8Bs5SSQ8NghYRxwPPAgbXNblU0mpDe3hI4ct0w9dKOrMBmkscmpb5qIOcYWh+lzlz1Fbek1QLJSL2Br5tO9GI6h2eA22LpDl1Bo8JtDk5y/MlSWc0LE9X1zjf2VWZXJ5nAS7YayvDPghcUdTVqsk7JC03NO8KXASzoAW1T4AJST8NCTkOqurTupBh7xX1vSXpg8mQw18iwka+BhzRAMPBrasgt7SA22mV/gz7bsAK4KqyjWr+n9dt2PcDTqk27PauN8qGfSrEcp6W8SIp0Aq0DAIZQ4qnFWgZBDKGFE8r0DIIZAwpnlagZRDIGFI8rUDLIJAxpHja/4UWETOqjjw3mPUy7BuAZyR9kzF/J4f0Hw25n+kBYM8aS918cYOk+zpJIdGo1DYf9wbdnPg3Oqfu4273aDqDvHML63z0e4xbkgfpRoR71t3Zt6RDGfaNwBPAXe5jN7Sb3F3WAlhPZZWkKxqg3Q9ckzDfKKlOtm0a2lPAeQlPvl6SSw9qJSJ8l4crkLoqe+W0Y38maXYdkYhwr+fXXaVV2TXX0J4Hzk4wdJOkeWPsaTMN7e7qqpy23IZdMfEo4N7RLso6SQsMbQJ4J8HCRZIGZuSrJeru4wuBfRLm3Z5V/wBeBhb72qBenOZWbLdkD5MXvZRbXpvj0MPNtqP+ofAn4LtIfujB6b+gybuByxqolQuaKjjT27Fd8ukrdE6stlO+zcW3BKyUtGaYG47L7/8CCPJeTDQCuQYAAAAASUVORK5CYII=');
     }
-    .location{
+    
+    .location {
         background-image: url("https://billson.oss-cn-shenzhen.aliyuncs.com/React-Music/location-icon.svg");
     }
     
     .search-bar-input {
         /*width: 5.78rem;*/
-        height:30px;
+        height: 30px;
         max-height: 30px;
         border-radius: 15px;
         position: relative;
@@ -175,11 +190,11 @@
         transition: all linear .2s;
         background: #FFF;
         z-index: 20;
-        color:#9C9C9C;
+        color: #9C9C9C;
     }
     
     .search-icon-active {
-        width:60px
+        width: 60px
     }
     
     .search-cancel {
@@ -210,6 +225,7 @@
         display: inline-block;
         margin-right: 4px;
     }
+    
     .search {
         height: 100%;
         width: 100%;
@@ -269,6 +285,7 @@
         background: #FBFCFD;
         margin-bottom: 0.6rem;
     }
+    
     .search-result-content {
         width: 100%;
         height: 100%;

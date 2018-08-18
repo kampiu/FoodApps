@@ -19,11 +19,10 @@ const crypt = () => {
 axios.defaults.timeout = 10000
 axios.defaults.retry = 4
 axios.defaults.withCredentials = true
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
-//axios.defaults.headers['Authorization'] = localStorage.getItem("eleme_billson_token") || ""
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+//
 
 axios.interceptors.request.use(config => {
-//	config.headers["Content-Type"] = "application/x-www-form-urlencoded"
 	if(config.body && !config.__retryCount) { //判断是否第一次发起请求   与请求的数据是否存在
 		let key = cryptojs.enc.Latin1.parse('5AA765D61D8327DE'),
 			ivs = crypt(),

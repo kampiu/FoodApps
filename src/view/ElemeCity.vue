@@ -11,37 +11,17 @@
             <vue-put-to class="map-view-scroll">
                 <div class="city-list" v-for="(item, index) in cityList" :key="item.idx + 'list'">
                     <div class="letter-title">{{item.idx}}</div>
-                    <div class="city-item" v-for="(_item,_index) in item.cities" :key="_item.id + 'city'" :data-id="_item.id">{{_item.name}}</div>
+                    <div class="city-item" v-for="(_item,_index) in item.cities" :key="_item.id + 'city'" :data-name="_item.name" :data-id="_item.id" @click="setCity">{{_item.name}}</div>
                 </div>
             </vue-put-to>
         </div>
     </transition>
 </template>
-<style>
-    .letter-title {
-        width: 100%;
-        background: #FBFCFD;
-        height: 36px;
-        color: #333;
-        line-height: 36px;
-        font-weight: 800;
-        font-size: 14px;
-        padding: 0 16px;
-    }
-    
-    .city-item {
-        width: 100%;
-        height: 31px;
-        line-height: 30px;
-        border-bottom: 1px solid #F6F6F6;
-        color: #666;
-        padding: 0 16px;
-        background: #FFF;
-    }
-</style>
+
 <script>
     import vuePutTo from 'vue-pull-to'
     import api from '@/common/api'
+    import { Toast } from 'vant'
     import {
         mapMutations,
         mapGetters
@@ -80,6 +60,10 @@
             this.initData()
         },
         methods: {
+            setCity(e) {
+                this.$store.commit("common/initCity", e.target.dataset.name)
+                this.$router.replace("/home")
+            },
             refresh(loaded) {
                 loaded('done')
             },
@@ -88,16 +72,16 @@
             },
             initData() {
                 this.$ajax(api.getCity()).then(e => {
-                    console.log(e)
-                    this.cityList = e.result.data
+                    if(e.code === 200){
+                        Toast({message: '获取城市列表成功!', duration: 1000})
+                        this.cityList = e.result.data
+                    }
                 }).catch(err => {
-                    console.log(err)
+                    Toast({message: '获取城市列表失败!', duration: 1000})
                 })
             },
             toHome() {
-                this.$router.push({
-                    path: '/home'
-                })
+                this.$router.replace("/home")
             },
             toScroll(e) {
                 let _i = e.target.dataset.index
@@ -111,6 +95,27 @@
 </script>
 
 <style>
+    .letter-title {
+        width: 100%;
+        background: #FBFCFD;
+        height: 36px;
+        color: #333;
+        line-height: 36px;
+        font-weight: 800;
+        font-size: 14px;
+        padding: 0 16px;
+    }
+    
+    .city-item {
+        width: 100%;
+        height: 31px;
+        line-height: 30px;
+        border-bottom: 1px solid #F6F6F6;
+        color: #666;
+        padding: 0 16px;
+        background: #FFF;
+    }
+    
     .map-view {
         width: 100vw;
         height: 100vh;

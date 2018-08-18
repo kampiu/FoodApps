@@ -14,11 +14,11 @@
             <div class="personal-list">
                 <div class="personal-item wall_icon">钱包</div>
                 <div class="personal-item collect_icon">收藏</div>
-                <div class="personal-item coupons_icon">优惠券</div>
+                <router-link to="/coupon" class="personal-item coupons_icon">优惠券</router-link>
                 <router-link to="/address" class="personal-item location_icon">收货地址</router-link>
             </div>
             <div class="personal-list">
-                <div class="personal-item set_icon">设置</div>
+                <router-link to="/setting" class="personal-item set_icon">设置</router-link>
             </div>
         </vue-put-to>
     </div>

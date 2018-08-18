@@ -1,11 +1,7 @@
 <template>
     <div class="address-map-view">
-        <!--<div class="order-header-title">
-            选择地址
-        </div>-->
         <div class="address-map-search">
             <div class="seller-back" @click="backTo"></div>
-            <!--<div class="address-city">东莞</div>-->
             <input id="search-address" type="text" />
         </div>
         <div class="address-map-marker"></div>
@@ -126,7 +122,6 @@
             },
             backTo() {
                 this.$router.replace(this.History)
-//              window.history.go(-1)
             }
         },
         activated() {
@@ -142,16 +137,10 @@
             this.search = null
             this.word = ""
         },
-        filters: {
-
-        },
         computed: {
             ...mapGetters([
                 'router'
             ])
-        },
-        watch: {
-
         }
     }
 </script>

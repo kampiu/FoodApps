@@ -84,6 +84,9 @@
 
         },
         methods: {
+            loadImg(e){
+                
+            },
             showInfo(e) {
                 if(!this.showInfoBool) {
                     this.productionInfo = this.sellerList[e.target.dataset.list].foodList[e.target.dataset.id]

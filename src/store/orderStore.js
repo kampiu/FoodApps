@@ -1,5 +1,6 @@
 import ajax from '@/common/http'
 import api from '@/common/api'
+import { Toast } from 'vant'
 
 const orderStore = {
 	namespaced: true,
@@ -18,7 +19,7 @@ const orderStore = {
 			state.orderList = list
 			localStorage.setItem("eleme_orderList", JSON.stringify(list))
 		},
-		addOrder(state, list){
+		addOrder(state, list) {
 			state.orderList = Array.from(new Set(state.orderList.concat(list)))
 			localStorage.setItem("eleme_orderList", JSON.stringify(state.orderList))
 		},
@@ -69,12 +70,21 @@ const orderStore = {
 			commit,
 			state
 		}) {
-			ajax.post(api.getOrderList()).then(res => {
-				console.log(res.result)
-				res.code === 200 && commit("initOrder", res.result)
-			}).catch(err => {
-				console.log("获取订单列表失败!",err)
-			})
+			if(localStorage.getItem("eleme_billson_token")) {
+				ajax.post(api.getOrderList()).then(res => {
+					console.log("ORDER",res)
+					res.code === 200 && Toast({
+						message: '获取订单列表成功!!',
+						duration: 1000
+					})
+					res.code === 200 && commit("initOrder", res.result)
+				}).catch(err => {
+					Toast({
+						message: '获取订单列表失败!!',
+						duration: 1000
+					})
+				})
+			}
 		}
 	}
 }

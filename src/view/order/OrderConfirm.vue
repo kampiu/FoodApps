@@ -49,6 +49,7 @@
 <script>
     import addressPut from '@/components/addressPut'
     import api from '@/common/api'
+    import { Toast } from 'vant'
     import {
         mapMutations,
         mapGetters
@@ -58,11 +59,11 @@
         data() {
             return {
                 notAdr: false,
-                isShowAdrList:false,
-                seltAdr:{},
-                orderData:{
-                    seller:{
-                        leadTime:""
+                isShowAdrList: false,
+                seltAdr: {},
+                orderData: {
+                    seller: {
+                        leadTime: ""
                     }
                 }
             }
@@ -75,19 +76,18 @@
         },
         beforeRouteEnter: (to, from, next) => {
             next(vm => {
-                if(to.params.id){
+                if(to.params.id) {
                     vm.initOrderData()
-                }else{
+                } else {
                     vm.$router.replace(from.path)
                 }
             })
         },
         methods: {
-            initOrderData(){
-                console.log(this.$route, this.orderList)
+            initOrderData() {
                 this.seltAdr = this.userAddress[0] ? this.userAddress[0] : {}
-                for(let i = 0,len = this.orderList.length;i < len;i++){
-                    if(this.orderList[i].orderCode == this.$route.params.id){
+                for(let i = 0, len = this.orderList.length; i < len; i++) {
+                    if(this.orderList[i].orderCode == this.$route.params.id) {
                         this.orderData = this.orderList[i]
                         return
                     }
@@ -95,10 +95,9 @@
                 alert("订单不存在!")
                 this.$router.replace("/home")
             },
-            selectAddress(data){
+            selectAddress(data) {
                 this.seltAdr = this.userAddress[data.index]
                 this.isShowAdrList = false
-                console.log(data)
             },
             addOrder() {
                 let order = []
@@ -114,17 +113,28 @@
                     adrId: this.seltAdr.adr_id,
                     order: order
                 }
-                console.log(formData)
                 this.$ajax.post(api.addOrder(), formData).then(res => {
-                    console.log(res)
-                    if(res.code === 200){
-                        this.$store.dispatch("order/initNewOrder",{order:res.result,oldId:this.orderData.orderCode})
+                    if(res.code === 200) {
+                        Toast({
+                            message: '提交订单成功!',
+                            duration: 1000
+                        })
+                        this.$store.dispatch("order/initNewOrder", {
+                            order: res.result,
+                            oldId: this.orderData.orderCode
+                        })
                         this.$router.replace("/order/home")
-                    }else{
-                        console.log("订单提交失败!")
+                    } else {
+                        Toast({
+                            message: '订单提交失败!',
+                            duration: 1000
+                        })
                     }
                 }).catch(err => {
-                    console.log("ERROR", err)
+                    Toast({
+                        message: "服务器错误",
+                        duration: 1000
+                    })
                 })
             },
             getAddress() {
@@ -136,8 +146,15 @@
                     this.notAdr = res.data.length === 0 ? false : true
                     this.seltAdr = this.userAddress[0] ? this.userAddress[0] : {}
                     res.code === 200 && this.$store.commit("address/initAdrList", res.data)
+                    res.code === 200 && Toast({
+                        message: '提交订单成功!',
+                        duration: 1000
+                    })
                 }).catch(err => {
-                    console.log("获取地址列表失败", err)
+                    Toast({
+                        message: '获取地址列表失败!',
+                        duration: 1000
+                    })
                 })
             },
             toSelectAdr() {
@@ -214,7 +231,7 @@
         padding: 5px 16px 5px 0;
         flex-direction: column;
         align-items: flex-start;
-        justify-content:space-around;
+        justify-content: space-around;
         position: relative;
     }
     
@@ -319,6 +336,7 @@
         position: fixed;
         left: 0;
         bottom: 0;
+        z-index: 200;
     }
     
     .order-bar>div,

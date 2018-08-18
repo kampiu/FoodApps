@@ -16,6 +16,9 @@ const ElemeIconPut = resolve => require(['./../view/ElemeIconPut.vue'], resolve)
 const ElemeLogin = resolve => require(['./../view/ElemeLogin.vue'], resolve)
 const ElemeRegister = resolve => require(['./../view/ElemeRegister.vue'], resolve)
 
+//Waller页面
+const ElemeCoupon = resolve => require(['./../view/waller/ElemeCoupon.vue'], resolve)
+const ElemeSet = resolve => require(['./../view/waller/ElemeSet.vue'], resolve)
 //Seller页面
 const ElemeSeller = resolve => require(['./../view/ElemeSeller.vue'], resolve)
 const SellerComment = resolve => require(['./../view/seller/SellerComment.vue'], resolve)
@@ -33,6 +36,16 @@ const addressEdit = resolve => require(['./../view/address/addressEdit.vue'], re
 const addressMap = resolve => require(['./../view/address/addressMap.vue'], resolve)
 
 const router = new Router({
+	scrollBehavior(to, from, savedPosition) {
+		if(savedPosition) {
+			return savedPosition
+		} else {
+			return {
+				x: 0,
+				y: 0
+			}
+		}
+	},
 	routes: [{
 			name: 'index',
 			path: '/',
@@ -187,7 +200,29 @@ const router = new Router({
 				title: "添加收货地址",
 				description: "用户的收货地址，添加收货地址",
 				requireAuth: true,
-				keeyAlive:false
+				keeyAlive: false
+			}
+		},
+		{
+			name: 'coupon',
+			path: '/coupon',
+			component: ElemeCoupon,
+			meta: {
+				title: "优惠券",
+				description: "用户优惠券，优惠券列表",
+				requireAuth: true,
+				keeyAlive: false
+			}
+		},
+		{
+			name: 'setting',
+			path: '/setting',
+			component: ElemeSet,
+			meta: {
+				title: "个人信息修改",
+				description: "用户信息修改，用户个人信息",
+				requireAuth: true,
+				keeyAlive: false
 			}
 		},
 		{
@@ -198,7 +233,7 @@ const router = new Router({
 				title: "修改收货地址",
 				description: "用户的收货地址，修改收货地址",
 				requireAuth: true,
-				keeyAlive:false
+				keeyAlive: false
 			}
 		},
 		{
@@ -240,19 +275,16 @@ router.beforeEach((to, from, next) => {
 	if(to.meta && to.meta.title) {
 		document.title = to.meta.title
 	}
+	if(to.meta && to.meta.description) {
+		document.getElementById("description").setAttribute("content", to.meta.description)
+	}
 	if(to.meta && to.meta.requireAuth) {
 		if(store.getters.token !== "" || localStorage.getItem("eleme_billson_token")) {
 			next()
 		} else {
-//			if(to.name === "modifyUpload") {
-//				next({
-//					path: '/home'
-//				})
-//			} else {
-				next({
-					path: '/login'
-				})
-//			}
+			next({
+				path: '/login'
+			})
 		}
 	} else {
 		next()

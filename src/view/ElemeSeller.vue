@@ -1,6 +1,6 @@
 <template>
-    <div class="seller-view">
-        <div class="seller-header">
+    <div :class="show ? 'seller-view' : 'seller-view-disable seller-view'">
+        <div class="seller-header" v-if="show">
             <div class="seller-header-bg">
                 <div :style="{backgroundImage: 'url(' + sellerInfo.sel_icon + ')'}"></div>
             </div>
@@ -11,7 +11,7 @@
             </div>
             <div class="seller-header-icon" :style="{backgroundImage: 'url(' + sellerInfo.sel_icon + ')'}"></div>
         </div>
-        <div class="sv-body">
+        <div class="sv-body" v-if="show">
             <div class="sv-header">
                 <router-link to="home" :class="router === 'sellerIndex' ? 'sv-nav sv-nav-active' : 'sv-nav'">点菜</router-link>
                 <router-link to="comment" :class="router === 'sellerComment' ? 'sv-nav sv-nav-active' : 'sv-nav'">评价</router-link>
@@ -36,6 +36,7 @@
     import sellerPut from '@/components/sellerPut'
     import store from '@/store/store'
     import api from '@/common/api'
+    import { Toast } from 'vant'
     import {
         mapMutations,
         mapGetters
@@ -44,7 +45,7 @@
     export default {
         data() {
             return {
-
+                show: false
             }
         },
         components: {
@@ -65,10 +66,20 @@
         methods: {
             initData(id) {
                 this.$ajax.get(api.getSeller(id)).then(res => {
-                    this.cataId = res.result.data[0].sel_ele_id
-                    this.$store.commit("initSellerInfo", res.result.data[0])
+                    if(res.code === 200) {
+                        this.show = true
+                        Toast({
+                            message: '获取商家信息成功!',
+                            duration: 1000
+                        })
+                        this.cataId = res.result.data[0].sel_ele_id
+                        this.$store.commit("initSellerInfo", res.result.data[0])
+                    }
                 }).catch(err => {
-                    console.log(err)
+                    Toast({
+                        message: '获取商家信息失败!',
+                        duration: 1000
+                    })
                 })
             },
             backTo() {
@@ -83,11 +94,8 @@
                 'router'
             ])
         },
-        filters: {
-
-        },
-        watch: {
-
+        deactivated() {
+            this.show = false
         }
     }
 </script>
@@ -96,7 +104,13 @@
     .seller-view {
         position: fixed;
         left: 0;
-        top: 0
+        top: 0;
+    }
+    .seller-view-disable{
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-image: url(../assets/bgmask.png);
     }
     
     .seller-header {

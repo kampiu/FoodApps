@@ -33,24 +33,22 @@ const shopcartStore = {
 				let cartList = localStorage.getItem("eleme_cartList") ? JSON.parse(localStorage.getItem("eleme_cartList")) : {}
 				cartList[data.seller] = cartList[data.seller] ? cartList[data.seller] : []
 				cartList[data.seller].push(Object.assign({}, data.order))
-				//第一次购物车存放有效商品，初始化价格与数量,与购物车
 				state.cartCount[data.seller]++
 					state.cartPay[data.seller] = data.order.pro_price
 				state.cartList[data.seller].push(Object.assign({}, data.order))
-
 				localStorage.setItem("eleme_cartList", JSON.stringify(cartList))
 				return
 			}
 			state.cartCount[data.seller]++
 				state.cartPay[data.seller] = parseFloat(state.cartPay[data.seller]) + parseFloat(data.order.pro_price)
 			let bool = true
-			let cartList = localStorage.getItem("eleme_cartList") ? JSON.parse(localStorage.getItem("eleme_cartList")) : [] //添加商品问题：数组轮加。。
-			cartList[data.seller].forEach((item, index) => { //判断属性是否相同，不相同就当作新的商品添加
-				if(item.pro_id === data.order.pro_id) { //相同ID的商品，没判断属性是否相同
+			let cartList = localStorage.getItem("eleme_cartList") ? JSON.parse(localStorage.getItem("eleme_cartList")) : [] 
+			cartList[data.seller].forEach((item, index) => { 
+				if(item.pro_id === data.order.pro_id) { 
 					if(item.pro_select ? (item.pro_select.toString() === data.order.pro_select.toString()) : item.pro_select === data.order.pro_select) {
 						bool = false
 						cartList[data.seller][index].pro_num++
-					} 					//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!添加相同商品不同的属性有问题
+					} 					
 				}
 			})
 			if(bool) {
@@ -64,8 +62,8 @@ const shopcartStore = {
 			state.cartCount[data.seller]--
 				state.cartPay[data.seller] = parseFloat(state.cartPay[data.seller]) - parseFloat(data.order.pro_price)
 			let cartList = localStorage.getItem("eleme_cartList") ? JSON.parse(localStorage.getItem("eleme_cartList")) : []
-			cartList[data.seller].forEach((item, index) => { //商品的移除，判断了商品ID，还需判断商品的属性，根据相同商品的不同属性移除不同的属性
-				if(item.pro_id === data.order.pro_id) { //相同商品的时候，判断ID后，需要判断商品的属性是否一样来进行删除，还需以商品的属性键值来删除			
+			cartList[data.seller].forEach((item, index) => { 
+				if(item.pro_id === data.order.pro_id) { 		
 					if(item.pro_select ? (item.pro_select.toString() === data.order.pro_select.toString()) : item.pro_select === data.order.pro_select) {
 						if(cartList[data.seller][index].pro_num === 1) {
 							cartList[data.seller].splice(index, 1)

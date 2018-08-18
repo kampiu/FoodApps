@@ -22,6 +22,7 @@
 <script>
     import CryptoJS from 'crypto-js'
     import api from '@/common/api'
+    import { Toast } from 'vant'
     import {
         mapMutations,
         mapGetters
@@ -31,8 +32,8 @@
         data() {
             return {
                 admin: {
-                    acount: "billson",
-                    code: "123456"
+                    acount: "",
+                    code: ""
                 }
             }
         },
@@ -44,6 +45,13 @@
         },
         methods: {
             loginBtn() {
+                this.admin.acount = this.admin.acount.replace(" ","")
+                this.admin.code = this.admin.code.replace(" ","")
+                this.admin.acount === "" && Toast({message: '账号不能为空!', duration: 1000})
+                this.admin.code === "" && Toast({message: '密码不能为空!', duration: 1000})
+                if(this.admin.acount === "" || this.admin.code === ""){
+                    return
+                }
                 let data = {
                     pwd: CryptoJS.MD5(this.admin.code).toString(),
                     acount: this.admin.acount
@@ -51,12 +59,14 @@
                 this.$ajax.post(api.login(), data).then(res => {
                     if(res.code === 200) {
                         let {
-                            token: token,
+                            token,
                             ...info
                         } = res.result
                         localStorage.setItem("eleme_billson_token", token)
+                        document.cookie += ";token=" + token
                         this.$store.commit("user/getToken", token)
                         this.$store.commit("user/initInfo", info)
+                        this.$store.dispatch("order/getOrderForServer")
                         this.$router.go(-1)
                     }
                 }).catch(err => {

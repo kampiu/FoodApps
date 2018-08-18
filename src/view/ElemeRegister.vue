@@ -17,7 +17,7 @@
             </div>
             <div class="sms-item">
                 <i class="sms-icon"></i>
-                <input @keyup="checkData" v-model="admin.sms" placeholder="Code" value="" type="number" />
+                <input @keyup="checkData" autocomplete="off" v-model="admin.sms" placeholder="Code" value="" type="number" />
                 <div class="sms-btn" :style="{color: smsFlag ? '#0387FF' : '#D0D0D0'}" @click="toSendSms">Send</div>
             </div>
             <div class="login-btn" :style="{color: regFlag ? '#0387FF' : '#D0D0D0'}" @click="toRegister">注册</div>
@@ -30,6 +30,7 @@
 <script>
     import CryptoJS from 'crypto-js'
     import api from '@/common/api'
+    import { Toast } from 'vant'
     import {
         mapMutations,
         mapGetters
@@ -56,26 +57,28 @@
         },
         methods: {
             backTo() {
-                this.$router.replace("/home")
+                this.$router.replace("/login")
             },
             checkData() {
                 this.smsFlag = /^1[3|5|7|8|]\d{9}$/.test(this.admin.phone) ? true : false
                 if(/^[_A-Za-z0-9]{6,}$/gi.test(this.admin.acount) && /^\d{6,16}$/gi.test(this.admin.code) && /^1[3|5|7|8|]\d{9}$/.test(this.admin.phone)) {
-                    if(/[0-9]{6}/.test(this.admin.sms)) {
+                    if(/^[0-9]{6}$/.test(this.admin.sms)) {
                         this.regFlag = true
+                    }else{
+                        this.regFlag = false
                     }
                 } else {
                     this.regFlag = false
                 }
             },
             toSendSms() {
-                if(!this.smsFlag) return
+                if(!this.smsFlag) return  
                 this.$ajax.post(api.getPhoneCode(), {
                     phone: this.admin.phone
                 }).then(res => {
-                    console.log(res, "获取验证码成功!")
+                    res.code && Toast({message: '验证码发送成功!', duration: 1000})
                 }).catch(err => {
-                    console.log("获取验证码失败!", err)
+                    Toast({message: '获取验证码失败!', duration: 1000})
                 })
             },
             toRegister() {
@@ -86,10 +89,9 @@
                     phone: this.admin.phone,
                     code: this.admin.sms
                 }
-                console.log("注册参数:", data)
                 this.$ajax.post(api.register(), data).then(res => {
-                    console.log(res, "注册成功!")
                     if(res.code === 200) {
+                        Toast({message: '注册成功!', duration: 1000})
                         let {
                             token: token,
                             ...info
@@ -98,6 +100,8 @@
                         this.$store.commit("user/getToken", token)
                         this.$store.commit("user/initInfo", info)
                         this.$router.go(-1)
+                    }else{
+                        Toast({message: res.msg, duration: 1000})
                     }
                 }).catch(err => {
                     console.log("注册失败!", err)

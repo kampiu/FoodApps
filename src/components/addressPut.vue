@@ -48,7 +48,6 @@
                 this.$emit("toSelectAdr")
             },
             setAdr(e){
-                console.log("safdsdf")
                 let p = document.getElementsByClassName("address-put-item-select")
                 for(let i = 0,len = p.length;i < len;i++){
                     if(p[i].checked){

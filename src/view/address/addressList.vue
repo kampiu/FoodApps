@@ -26,6 +26,7 @@
 <script>
     import vuePutTo from 'vue-pull-to'
     import api from '@/common/api'
+    import { Toast } from 'vant'
     import {
         mapMutations,
         mapGetters
@@ -69,9 +70,10 @@
                 this.$ajax.get(api.getAddress()).then(res => {
                     this.addressList = res.data
                     res.code === 200 && this.$store.commit("address/initAdrList", res.data)
+                    res.code === 200 && Toast({message: '获取收货地址成功!', duration: 1000})
                     callback && callback()
                 }).catch(err => {
-                    console.log("获取地址列表失败", err)
+                    Toast({message: '获取地址列表失败!', duration: 1000})
                 })
             },
             refresh(loaded) {

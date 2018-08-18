@@ -38,11 +38,8 @@
                 this.$emit("toggleCart")
             },
             addOrder() {
-                console.log(this.cartCount, this)
                 if(this.token === '') return
-                //下单，store处理商品数据
                 if(this.cartPay[this.sellerInfo.sel_ele_id] > parseFloat(this.sellerInfo.sel_min_distribution)) {
-//                  let tel = this.tellCheck(this.sellerInfo.sel_tell)
                     let data = {
                         seller: {                   //订单商家信息
                             id: this.sellerInfo.sel_ele_id,
@@ -64,13 +61,11 @@
                         orderPrice: (parseFloat(this.sellerInfo.sel_distribution) + parseFloat(this.cartPay[this.sellerInfo.sel_ele_id])).toFixed(2),
                         orderCode: this.getOrderCode()
                     }
-                    console.log(data)
                     this.$store.commit("addOrder", data)
                     this.$store.commit("order/initCreate", data)
                     this.$router.push({
                         path: '/orderConfirm/' + data.orderCode
                     })
-//                  this.$router.replace("/orderConfirm/" + data.orderId)
                 }
             },
             tellCheck(tel) {
